@@ -12,7 +12,7 @@ export default function OwnerDashboardPage() {
 
   return (
     <OwnerLayout>
-      <div className="space-y-8">
+      <div className="space-y-8 max-auto px-4 py-8">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">Dashboard</h1>
           <Button asChild>
@@ -88,7 +88,7 @@ export default function OwnerDashboardPage() {
                         <div className="text-sm text-muted-foreground">
                           {
                             ["Single Room", "Double Room", "Triple Room", "En-suite Single", "Double En-suite"][
-                              booking - 1
+                            booking - 1
                             ]
                           }{" "}
                           at {ownerHostels[booking % 3].name}
