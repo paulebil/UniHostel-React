@@ -74,7 +74,7 @@ export default function AdminDashboardPage() {
             <TabsTrigger value="bookings">Bookings</TabsTrigger>
             <TabsTrigger value="reports">Reports</TabsTrigger>
           </TabsList>
-          {/* Hostels Tab */
+          {/* Hostels Tab */}
           <TabsContent value="hostels">
             <Card>
               <CardHeader className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">

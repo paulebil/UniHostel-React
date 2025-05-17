@@ -47,11 +47,8 @@ export default function Header() {
           <>
             <DesktopNav />
             <div className="flex items-center gap-4">
-              <Button variant="outline" asChild>
-                <Link href="/owner/login">Owner Login</Link>
-              </Button>
               <Button asChild>
-                <Link href="/hostels">Find Hostels</Link>
+                <Link href="/owner/login">Hostel Owner Login</Link>
               </Button>
             </div>
           </>
