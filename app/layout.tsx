@@ -22,7 +22,7 @@ export default function RootLayout({
     pathname.startsWith("/owner/hostels") ||
     pathname.startsWith("/owner/hostels/create") ||
     pathname.startsWith("/owner/hostels/[id]") ||
-    pathname.startsWith("/admin/")
+    pathname.startsWith("/admin")
 
   return (
     <html lang="en" suppressHydrationWarning>
