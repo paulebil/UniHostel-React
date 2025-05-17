@@ -18,7 +18,7 @@ export default function AdminDashboardPage() {
           <h1 className="text-3xl font-bold">Admin Dashboard</h1>
           <p className="text-muted-foreground">Manage the UniHostel platform</p>
         </div>
-        
+
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -69,7 +69,7 @@ export default function AdminDashboardPage() {
             </CardContent>
           </Card>
         </div>
-        
+
         <Tabs defaultValue="hostels" className="space-y-4">
           <TabsList>
             <TabsTrigger value="hostels">Hostels</TabsTrigger>
@@ -77,7 +77,7 @@ export default function AdminDashboardPage() {
             <TabsTrigger value="bookings">Bookings</TabsTrigger>
             <TabsTrigger value="reports">Reports</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="hostels">
             <Card>
               <CardHeader className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
@@ -148,7 +148,7 @@ export default function AdminDashboardPage() {
               </CardContent>
             </Card>
           </TabsContent>
-          
+
           <TabsContent value="users">
             <Card>
               <CardHeader className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
@@ -225,7 +225,7 @@ export default function AdminDashboardPage() {
               </CardContent>
             </Card>
           </TabsContent>
-          
+
           <TabsContent value="bookings">
             <Card>
               <CardHeader className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
@@ -281,11 +281,11 @@ export default function AdminDashboardPage() {
                         <TableCell>{booking.hostel}</TableCell>
                         <TableCell>{booking.room}</TableCell>
                         <TableCell>
-                          <Badge 
+                          <Badge
                             className={
                               booking.status === 'Active' ? 'bg-green-100 text-green-800 hover:bg-green-100' :
-                              booking.status === 'Pending' ? 'bg-blue-100 text-blue-800 hover:bg-blue-100' :
-                              booking.status === 'Cancelled' ? 'bg-red-100 text-red-800 hover:bg-red-100' :
-                              'bg-gray-100 text-gray-800 hover:bg-gray-100'
+                                booking.status === 'Pending' ? 'bg-blue-100 text-blue-800 hover:bg-blue-100' :
+                                  booking.status === 'Cancelled' ? 'bg-red-100 text-red-800 hover:bg-red-100' :
+                                    'bg-gray-100 text-gray-800 hover:bg-gray-100'
                             }
                           \

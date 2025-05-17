@@ -10,7 +10,7 @@ export default function Home() {
     <div className="container mx-auto px-4 py-8">
       <section className="mb-12 py-16 text-center">
         <h1 className="mb-4 text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
-          Find Your Perfect Student Hostel
+          Find Your Perfect Hostel
         </h1>
         <p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground">
           Browse through hundreds of hostels, compare prices, and book your stay with ease.
