@@ -3,17 +3,23 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
-import { hostels } from "@/lib/data"
+import { getHostels } from "@/lib/data"
 import { Calendar, Check, Users, Wifi, Utensils, Tv } from "lucide-react"
 import Link from "next/link"
 import ImageGallery from "@/components/image-gallery"
 
-export default function RoomDetailsPage({ params }: { params: { id: string; roomId: string } }) {
+export default async function RoomDetailsPage(props: { params: { id: string; roomId: string } }) {
+
+    // Get params
+  const { id } = await props.params
+  const {roomId} = await props.params
+
   // Find the hostel by ID
-  const hostel = hostels.find((h) => h.id === params.id) || hostels[0]
+  const hostels = await getHostels() 
+  const hostel = hostels.find((h) => h.id === id) || hostels[0]
 
   // Find the room by ID
-  const room = hostel.rooms?.find((r) => r.id === params.roomId) || hostel.rooms?.[0]
+  const room = hostel.rooms?.find((r) => r.id === roomId) || hostel.rooms?.[0]
 
   if (!room) {
     return <div>Room not found</div>

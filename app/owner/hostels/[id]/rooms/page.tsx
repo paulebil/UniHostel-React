@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { hostels } from "@/lib/data"
+import { getHostels } from "@/lib/data"
 import { Edit, MoreHorizontal, Plus, Search, Trash } from "lucide-react"
 import Link from "next/link"
 import OwnerLayout from "@/components/owner-layout"
@@ -16,9 +16,14 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 
-export default function OwnerRoomsPage({ params }: { params: { id: string } }) {
+export default async function OwnerRoomsPage(props: { params: { id: string } }) {
+
+    // Get params
+  const { id } = await props.params
+
   // Find the hostel by ID
-  const hostel = hostels.find((h) => h.id === params.id) || hostels[0]
+  const hostels = await getHostels() 
+  const hostel = hostels.find((h) => h.id === id) || hostels[0]
 
   return (
     <OwnerLayout>

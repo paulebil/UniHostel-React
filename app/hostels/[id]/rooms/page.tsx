@@ -1,11 +1,15 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { hostels } from "@/lib/data"
+import { getHostels } from "@/lib/data"
 import Link from "next/link"
 import RoomCard from "@/components/room-card"
 
-export default function RoomsPage({ params }: { params: { id: string } }) {
+export default async function RoomsPage(props: { params: { id: string } }) {
+    // Get params
+  const { id } = await props.params
+  
   // Find the hostel by ID
-  const hostel = hostels.find((h) => h.id === params.id) || hostels[0]
+  const hostels = await getHostels() 
+  const hostel = hostels.find((h) => h.id === id) || hostels[0]
 
   return (
     <div className="container mx-auto px-4 py-8">

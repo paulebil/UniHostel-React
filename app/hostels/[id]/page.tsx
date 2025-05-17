@@ -3,15 +3,17 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { hostels } from "@/lib/data"
+import { getHostels } from "@/lib/data"
 import { MapPin, Star, Wifi, Utensils, Dumbbell, BookOpen, Tv, Snowflake } from "lucide-react"
 import Link from "next/link"
 import RoomCard from "@/components/room-card"
 import ImageGallery from "@/components/image-gallery"
 
-export default function HostelDetailsPage({ params }: { params: { id: string } }) {
+export default async function HostelDetailsPage(props: { params: { id: string } }) {
   // Find the hostel by ID
-  const hostel = hostels.find((h) => h.id === params.id) || hostels[0]
+  const { id } = await props.params
+  const hostels = await getHostels() 
+  const hostel = hostels.find((h) => h.id === id) || hostels[0]
 
   return (
     <div className="container mx-auto px-4 py-8">

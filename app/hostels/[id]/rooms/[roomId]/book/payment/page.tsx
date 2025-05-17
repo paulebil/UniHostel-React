@@ -8,12 +8,16 @@ import { hostels } from "@/lib/data"
 import { CreditCard, Lock, ShieldCheck } from "lucide-react"
 import Link from "next/link"
 
-export default function PaymentPage({ params }: { params: { id: string; roomId: string } }) {
+export default async function PaymentPage(props: { params: { id: string; roomId: string } }) {
+    // Get params
+  const { id } = await props.params
+  const {roomId} = await props.params
+
   // Find the hostel by ID
-  const hostel = hostels.find((h) => h.id === params.id) || hostels[0]
+  const hostel = hostels.find((h) => h.id === id) || hostels[0]
 
   // Find the room by ID
-  const room = hostel.rooms?.find((r) => r.id === params.roomId) || hostel.rooms?.[0]
+  const room = hostel.rooms?.find((r) => r.id === roomId) || hostel.rooms?.[0]
 
   if (!room) {
     return <div>Room not found</div>

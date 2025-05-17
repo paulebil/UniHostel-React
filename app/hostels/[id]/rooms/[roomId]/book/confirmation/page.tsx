@@ -1,16 +1,24 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { hostels } from "@/lib/data"
+import { getHostels } from "@/lib/data"
 import { Calendar, Check, Download, Home, Mail, MapPin, Phone, Printer } from "lucide-react"
 import Link from "next/link"
 
-export default function ConfirmationPage({ params }: { params: { id: string; roomId: string } }) {
+export default async function ConfirmationPage( props: { params: { id: string; roomId: string } }) {
+
+  // Get params
+  const { id } = await props.params
+  const {roomId} = await props.params
+
+  // Get all hostels
+  const hostels = await getHostels() 
+
   // Find the hostel by ID
-  const hostel = hostels.find((h) => h.id === params.id) || hostels[0]
+  const hostel = hostels.find((h) => h.id === id) || hostels[0]
 
   // Find the room by ID
-  const room = hostel.rooms?.find((r) => r.id === params.roomId) || hostel.rooms?.[0]
+  const room = hostel.rooms?.find((r) => r.id === roomId) || hostel.rooms?.[0]
 
   if (!room) {
     return <div>Room not found</div>

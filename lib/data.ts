@@ -424,3 +424,10 @@ export const hostels: Hostel[] = [
     ],
   },
 ]
+
+
+export async function getHostels() {
+  
+  // Simulating asyc delay or future backend call
+  return hostels
+}

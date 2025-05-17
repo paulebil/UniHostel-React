@@ -6,16 +6,21 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
-import { hostels } from "@/lib/data"
+import { getHostels } from "@/lib/data"
 import { Calendar, CreditCard, Info } from "lucide-react"
 import Link from "next/link"
 
-export default function BookingPage({ params }: { params: { id: string; roomId: string } }) {
+export default async function BookingPage(props: { params: { id: string; roomId: string } }) {
+    // Get params
+  const { id } = await props.params
+  const {roomId} = await props.params
+
   // Find the hostel by ID
-  const hostel = hostels.find((h) => h.id === params.id) || hostels[0]
+  const hostels = await getHostels() 
+  const hostel = hostels.find((h) => h.id === id) || hostels[0]
 
   // Find the room by ID
-  const room = hostel.rooms?.find((r) => r.id === params.roomId) || hostel.rooms?.[0]
+  const room = hostel.rooms?.find((r) => r.id === roomId) || hostel.rooms?.[0]
 
   if (!room) {
     return <div>Room not found</div>

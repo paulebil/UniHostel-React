@@ -8,12 +8,17 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Upload } from "lucide-react"
-import { hostels } from "@/lib/data"
+import { getHostels } from "@/lib/data"
 import OwnerLayout from "@/components/owner-layout"
 
-export default function CreateRoomPage({ params }: { params: { id: string } }) {
+export default async function CreateRoomPage(props: { params: { id: string } }) {
+
+    // Get params
+  const { id } = await props.params
+  
   // Find the hostel by ID
-  const hostel = hostels.find((h) => h.id === params.id) || hostels[0]
+  const hostels = await getHostels() 
+  const hostel = hostels.find((h) => h.id === id) || hostels[0]
 
   return (
     <OwnerLayout>
