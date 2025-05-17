@@ -74,8 +74,7 @@ export default function AdminDashboardPage() {
             <TabsTrigger value="bookings">Bookings</TabsTrigger>
             <TabsTrigger value="reports">Reports</TabsTrigger>
           </TabsList>
-
-          {/* Hostels Tab */}
+          {/* Hostels Tab */
           <TabsContent value="hostels">
             <Card>
               <CardHeader className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
@@ -142,6 +141,7 @@ export default function AdminDashboardPage() {
               </CardContent>
             </Card>
           </TabsContent>
+
 
           {/* Users Tab */}
           <TabsContent value="users">
@@ -274,9 +274,9 @@ export default function AdminDashboardPage() {
                           <Badge
                             className={
                               booking.status === 'Active' ? 'bg-green-100 text-green-800 hover:bg-green-100' :
-                              booking.status === 'Pending' ? 'bg-blue-100 text-blue-800 hover:bg-blue-100' :
-                              booking.status === 'Cancelled' ? 'bg-red-100 text-red-800 hover:bg-red-100' :
-                              'bg-gray-100 text-gray-800 hover:bg-gray-100'
+                                booking.status === 'Pending' ? 'bg-blue-100 text-blue-800 hover:bg-blue-100' :
+                                  booking.status === 'Cancelled' ? 'bg-red-100 text-red-800 hover:bg-red-100' :
+                                    'bg-gray-100 text-gray-800 hover:bg-gray-100'
                             }
                           >
                             {booking.status}

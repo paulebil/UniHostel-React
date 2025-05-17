@@ -9,7 +9,7 @@ export default function Footer() {
           <div>
             <h3 className="mb-4 text-lg font-semibold">UniHostel</h3>
             <p className="mb-4 text-sm text-muted-foreground">
-              Find, view, and book the perfect student accommodation with ease.
+              Find, view, and book the perfect accommodation with ease.
             </p>
             <div className="flex space-x-4">
               <Link href="#" className="text-muted-foreground hover:text-foreground">
