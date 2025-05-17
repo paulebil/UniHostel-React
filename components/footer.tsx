@@ -4,7 +4,7 @@ import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react"
 export default function Footer() {
   return (
     <footer className="border-t bg-background">
-      <div className="container px-4 py-12 md:px-6 lg:py-16">
+      <div className="container px-4 py-12">
         <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-4">
           <div>
             <h3 className="mb-4 text-lg font-semibold">UniHostel</h3>
@@ -78,15 +78,10 @@ export default function Footer() {
                   Owner Guide
                 </Link>
               </li>
-              <li>
-                <Link href="/owner-support" className="text-muted-foreground hover:text-foreground">
-                  Support
-                </Link>
-              </li>
             </ul>
           </div>
           <div>
-            <h3 className="mb-4 text-lg font-semibold">Company</h3>
+            <h3 className="mb-4 text-lg font-semibold">UniHostel</h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link href="/about" className="text-muted-foreground hover:text-foreground">
@@ -96,16 +91,6 @@ export default function Footer() {
               <li>
                 <Link href="/contact" className="text-muted-foreground hover:text-foreground">
                   Contact
-                </Link>
-              </li>
-              <li>
-                <Link href="/careers" className="text-muted-foreground hover:text-foreground">
-                  Careers
-                </Link>
-              </li>
-              <li>
-                <Link href="/privacy" className="text-muted-foreground hover:text-foreground">
-                  Privacy Policy
                 </Link>
               </li>
               <li>
