@@ -17,3 +17,7 @@ Then run this command to start your application
 ```
 npm run dev
 ```
+
+```
+npm run dev
+```
