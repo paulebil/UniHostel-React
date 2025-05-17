@@ -28,7 +28,9 @@ export default function OwnerLoginPage() {
           </div>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
-          <Button className="w-full">Login</Button>
+          <Button className="w-full">
+            <Link href="/owner/dashboard">Login</Link>
+            </Button>
           <div className="text-center text-sm">
             Don't have an account?{" "}
             <Link href="/owner/signup" className="text-primary hover:underline">
