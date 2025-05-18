@@ -18,16 +18,16 @@ import { Badge } from "@/components/ui/badge"
 
 export default async function OwnerRoomsPage(props: { params: { id: string } }) {
 
-    // Get params
+  // Get params
   const { id } = await props.params
 
   // Find the hostel by ID
-  const hostels = await getHostels() 
+  const hostels = await getHostels()
   const hostel = hostels.find((h) => h.id === id) || hostels[0]
 
   return (
     <OwnerLayout>
-      <div className="space-y-8">
+      <div className="pl-8 pr-4 md:pl-16 md:pr-4 py-12">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-3xl font-bold">Rooms at {hostel.name}</h1>
@@ -42,7 +42,7 @@ export default async function OwnerRoomsPage(props: { params: { id: string } }) 
         </div>
 
         <div className="flex flex-col gap-4 sm:flex-row">
-          <div className="relative flex-1">
+          <div className="relative flex-1 mb-4">
             <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input placeholder="Search rooms..." className="pl-9" />
           </div>

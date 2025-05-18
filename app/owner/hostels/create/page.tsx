@@ -13,7 +13,7 @@ import OwnerLayout from "@/components/owner-layout"
 export default function CreateHostelPage() {
   return (
     <OwnerLayout>
-      <div className="space-y-8">
+      <div className="pl-8 pr-4 md:pl-16 md:pr-4 py-12">
         <div>
           <h1 className="text-3xl font-bold">Add New Hostel</h1>
           <p className="text-muted-foreground">Create a new hostel listing on UniHostel</p>
