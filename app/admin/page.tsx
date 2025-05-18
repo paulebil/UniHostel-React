@@ -15,7 +15,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 export default function AdminDashboardPage() {
   return (
     <AdminLayout>
-      <div className="space-y-8">
+      <div className="pl-8 pr-4 md:pl-16 md:pr-4 py-12">
         <div>
           <h1 className="text-3xl font-bold">Admin Dashboard</h1>
           <p className="text-muted-foreground">Manage the UniHostel platform</p>

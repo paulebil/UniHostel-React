@@ -12,10 +12,10 @@ export default function OwnerDashboardPage() {
 
   return (
     <OwnerLayout>
-      <div className="space-y-8 max-auto px-4 py-8">
+      <div className="pl-8 pr-4 md:pl-16 md:pr-4 py-12">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">Dashboard</h1>
-          <Button asChild>
+          <Button asChild className="mb-4">
             <Link href="/owner/hostels/create">
               <Plus className="mr-2 h-4 w-4" />
               Add New Hostel

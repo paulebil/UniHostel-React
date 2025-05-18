@@ -13,16 +13,16 @@ import OwnerLayout from "@/components/owner-layout"
 
 export default async function CreateRoomPage(props: { params: { id: string } }) {
 
-    // Get params
+  // Get params
   const { id } = await props.params
-  
+
   // Find the hostel by ID
-  const hostels = await getHostels() 
+  const hostels = await getHostels()
   const hostel = hostels.find((h) => h.id === id) || hostels[0]
 
   return (
     <OwnerLayout>
-      <div className="space-y-8">
+      <div className="pl-8 pr-4 md:pl-16 md:pr-4 py-12">
         <div>
           <h1 className="text-3xl font-bold">Add New Room</h1>
           <p className="text-muted-foreground">Create a new room at {hostel.name}</p>

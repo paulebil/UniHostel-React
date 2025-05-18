@@ -15,14 +15,14 @@ export default function OwnerBookingsPage() {
 
   return (
     <OwnerLayout>
-      <div className="space-y-8">
+      <div className="pl-8 pr-4 md:pl-16 md:pr-4 py-12">
         <div>
           <h1 className="text-3xl font-bold">Bookings</h1>
           <p className="text-muted-foreground">Manage all bookings across your properties</p>
         </div>
 
         <div className="flex flex-col gap-4 sm:flex-row">
-          <div className="relative flex-1">
+          <div className="relative flex-1 mb-4">
             <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input placeholder="Search by booking ID, student name..." className="pl-9" />
           </div>
@@ -82,7 +82,7 @@ export default function OwnerBookingsPage() {
                         <div className="text-sm text-muted-foreground">
                           {
                             ["Single Room", "Double Room", "Triple Room", "En-suite Single", "Double En-suite"][
-                              booking - 1
+                            booking - 1
                             ]
                           }{" "}
                           at {ownerHostels[booking % 3].name}
