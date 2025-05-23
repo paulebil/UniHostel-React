@@ -9,8 +9,49 @@ import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Upload } from "lucide-react"
 import OwnerLayout from "@/components/owner-layout"
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { toast } from "@/components/ui/use-toast";
+
+// Add this at the top of your file
+const formSchema = z.object({
+  basic: z.object({
+    hostelName: z.string().min(3, "Enter Hostel Name"),
+    description: z.string().min(50, "Description must be at least 50 characters"),
+  }),
+  details: z.object({
+    amenities: z.array(z.string()).min(1, "Select at least one amenity"),
+    roomTypes: z.array(z.string()).min(1, "Select at least one room type"),
+    totalRooms: z.number().min(1, "Must have at least 1 room"),
+    capacity: z.number().min(1, "Must have at least 1 capacity"),
+    rules: z.string().optional(),
+  }),
+  photos: z.object({
+    images: z.array(z.any()).min(1, "Upload at least 1 photo"),
+  }),
+  location: z.object({
+    address: z.string().min(5, "Address must be at least 5 characters"),
+    city: z.string().min(2, "City must be at least 2 characters"),
+    state: z.string().min(2, "State must be at least 2 characters"),
+    postalCode: z.string().min(3, "Postal code must be at least 3 characters"),
+    country: z.string().min(1, "Please select a country"),
+    nearby: z.string().optional(),
+  }),
+  pricing: z.object({
+    minPrice: z.number().min(0, "Price cannot be negative"),
+    maxPrice: z.number().min(0, "Price cannot be negative"),
+    deposit: z.number().min(0, "Deposit cannot be negative"),
+    bookingFee: z.number().min(0, "Booking fee cannot be negative"),
+    stayPeriods: z.array(z.string()).min(1, "Select at least one stay period"),
+    paymentOptions: z.array(z.string()).min(1, "Select at least one payment option"),
+    availability: z.string().min(1, "Select an availability date"),
+  }),
+});
 
 export default function CreateHostelPage() {
+
   return (
     <OwnerLayout>
       <div className="pl-8 pr-4 md:pl-16 md:pr-4 py-12">
@@ -21,67 +62,71 @@ export default function CreateHostelPage() {
 
         <Tabs defaultValue="basic" className="space-y-4">
           <TabsList>
-            <TabsTrigger value="basic">Basic Information</TabsTrigger>
-            <TabsTrigger value="details">Details & Amenities</TabsTrigger>
+            <TabsTrigger value="basic">Hostel Information</TabsTrigger>
+            {/* <TabsTrigger value="details">Details & Amenities</TabsTrigger> */}
             <TabsTrigger value="photos">Photos</TabsTrigger>
-            <TabsTrigger value="location">Location</TabsTrigger>
-            <TabsTrigger value="pricing">Pricing</TabsTrigger>
+            {/* <TabsTrigger value="location">Location</TabsTrigger>
+            <TabsTrigger value="pricing">Pricing</TabsTrigger> */}
           </TabsList>
 
           <TabsContent value="basic">
             <Card>
               <CardHeader>
-                <CardTitle>Basic Information</CardTitle>
-                <CardDescription>Provide the essential details about your hostel</CardDescription>
+                <CardTitle>Hostel Information</CardTitle>
+                <CardDescription>Provide the details about your hostel</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="hostel-name">Hostel Name</Label>
-                  <Input id="hostel-name" placeholder="Enter the name of your hostel" />
+                <div className="space-y-2 ">
+                  <Label htmlFor="hostel-name" className="font-bold">Hostel Name</Label>
+                  <Input name="hostelName" id="hostel-name" placeholder="Enter the name of your hostel" />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="hostel-type">Hostel Type</Label>
-                  <Select>
-                    <SelectTrigger id="hostel-type">
-                      <SelectValue placeholder="Select hostel type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="student">Student Hostel</SelectItem>
-                      <SelectItem value="university">University Accommodation</SelectItem>
-                      <SelectItem value="private">Private Student Housing</SelectItem>
-                      <SelectItem value="mixed">Mixed Accommodation</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="location" className="font-bold">Location</Label>
+                  <Input name="location" id="location" placeholder="Enter hostel location" />
+                </div>
+
+
+                <div className="space-y-2">
+                  <Label htmlFor="location" className="font-bold">Amenities</Label>
+                  <Input name="amenities" id="amenities" placeholder="Enter hostel amenities" />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
+                  <Label htmlFor="price" className="font-bold">Average Price</Label>
+                  <Input name="price" id="price" placeholder="Enter hostel average price" />
+                </div>
+
+                {/*Hostel rules and regulations */}
+                <div className="space-y-2">
+                  <Label htmlFor="rules" className="font-bold">Rules and Regulations</Label>
+                  <Textarea
+                    id="rules"
+                    name="rules"
+                    placeholder="Provide hostel rules and regulations"
+                    className="min-h-[150px]"
+                  />
+                </div>
+                {/*Hostel description */}
+                <div className="space-y-2">
+                  <Label htmlFor="description" className="font-bold">Description</Label>
                   <Textarea
                     id="description"
+                    name="description"
                     placeholder="Provide a detailed description of your hostel"
                     className="min-h-[150px]"
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="short-description">Short Description</Label>
-                  <Input
-                    id="short-description"
-                    placeholder="A brief summary of your hostel (max 150 characters)"
-                    maxLength={150}
-                  />
-                  <p className="text-xs text-muted-foreground">This will be displayed in search results and listings</p>
-                </div>
               </CardContent>
               <CardFooter className="flex justify-between">
                 <Button variant="outline">Save as Draft</Button>
-                <Button>Continue to Details</Button>
+                <Button>Continue</Button>
               </CardFooter>
             </Card>
           </TabsContent>
 
-          <TabsContent value="details">
+          {/* <TabsContent value="details">
             <Card>
               <CardHeader>
                 <CardTitle>Details & Amenities</CardTitle>
@@ -169,7 +214,7 @@ export default function CreateHostelPage() {
                 <Button>Continue to Photos</Button>
               </CardFooter>
             </Card>
-          </TabsContent>
+          </TabsContent> */}
 
           <TabsContent value="photos">
             <Card>
@@ -202,12 +247,12 @@ export default function CreateHostelPage() {
               </CardContent>
               <CardFooter className="flex justify-between">
                 <Button variant="outline">Previous</Button>
-                <Button>Continue to Location</Button>
+                <Button>Complete</Button>
               </CardFooter>
             </Card>
           </TabsContent>
 
-          <TabsContent value="location">
+          {/* <TabsContent value="location">
             <Card>
               <CardHeader>
                 <CardTitle>Location</CardTitle>
@@ -278,9 +323,9 @@ export default function CreateHostelPage() {
                 <Button>Continue to Pricing</Button>
               </CardFooter>
             </Card>
-          </TabsContent>
+          </TabsContent> */}
 
-          <TabsContent value="pricing">
+          {/* <TabsContent value="pricing">
             <Card>
               <CardHeader>
                 <CardTitle>Pricing & Availability</CardTitle>
@@ -360,7 +405,7 @@ export default function CreateHostelPage() {
                 <Button>Submit Hostel</Button>
               </CardFooter>
             </Card>
-          </TabsContent>
+          </TabsContent> */}
         </Tabs>
       </div>
     </OwnerLayout>

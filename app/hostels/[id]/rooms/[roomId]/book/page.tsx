@@ -11,12 +11,12 @@ import { Calendar, CreditCard, Info } from "lucide-react"
 import Link from "next/link"
 
 export default async function BookingPage(props: { params: { id: string; roomId: string } }) {
-    // Get params
+  // Get params
   const { id } = await props.params
-  const {roomId} = await props.params
+  const { roomId } = await props.params
 
   // Find the hostel by ID
-  const hostels = await getHostels() 
+  const hostels = await getHostels()
   const hostel = hostels.find((h) => h.id === id) || hostels[0]
 
   // Find the room by ID
@@ -73,14 +73,14 @@ export default async function BookingPage(props: { params: { id: string; roomId:
                 <Input id="university" placeholder="Enter your university or college name" />
               </div>
 
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <Label htmlFor="student-id">Student ID (optional)</Label>
                 <Input id="student-id" placeholder="Enter your student ID if available" />
-              </div>
+              </div> */}
 
-              <Separator />
+              {/* <Separator /> */}
 
-              <div>
+              {/* {/* <div>
                 <h3 className="mb-4 text-lg font-medium">Booking Period</h3>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
@@ -117,8 +117,8 @@ export default async function BookingPage(props: { params: { id: string; roomId:
                     placeholder="Any special requirements or requests?"
                     className="min-h-[100px]"
                   />
-                </div>
-              </div>
+                </div> */}
+              {/* </div> */}
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
               <div className="flex items-start space-x-2">
@@ -269,6 +269,6 @@ export default async function BookingPage(props: { params: { id: string; roomId:
           </Card>
         </div>
       </div>
-    </div>
+    </div >
   )
 }

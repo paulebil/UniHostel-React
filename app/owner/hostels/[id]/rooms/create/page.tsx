@@ -11,6 +11,7 @@ import { Upload } from "lucide-react"
 import { getHostels } from "@/lib/data"
 import OwnerLayout from "@/components/owner-layout"
 
+
 export default async function CreateRoomPage(props: { params: { id: string } }) {
 
   // Get params
@@ -30,22 +31,22 @@ export default async function CreateRoomPage(props: { params: { id: string } }) 
 
         <Tabs defaultValue="basic" className="space-y-4">
           <TabsList>
-            <TabsTrigger value="basic">Basic Information</TabsTrigger>
-            <TabsTrigger value="details">Details & Amenities</TabsTrigger>
+            <TabsTrigger value="basic">Room Information</TabsTrigger>
+            {/* <TabsTrigger value="details">Details & Amenities</TabsTrigger> */}
             <TabsTrigger value="photos">Photos</TabsTrigger>
-            <TabsTrigger value="pricing">Pricing & Availability</TabsTrigger>
+            {/* <TabsTrigger value="pricing">Pricing & Availability</TabsTrigger> */}
           </TabsList>
 
           <TabsContent value="basic">
             <Card>
               <CardHeader>
-                <CardTitle>Basic Information</CardTitle>
+                <CardTitle>Room Information</CardTitle>
                 <CardDescription>Provide the essential details about this room</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="room-name">Room Name</Label>
-                  <Input id="room-name" placeholder="e.g., Deluxe Single Room, Standard Double Room" />
+                  <Label htmlFor="room-no">Room Number</Label>
+                  <Input id="room-no" placeholder="e.g., A02" />
                 </div>
 
                 <div className="space-y-2">
@@ -58,9 +59,6 @@ export default async function CreateRoomPage(props: { params: { id: string } }) 
                       <SelectItem value="single">Single Room</SelectItem>
                       <SelectItem value="double">Double Room</SelectItem>
                       <SelectItem value="triple">Triple Room</SelectItem>
-                      <SelectItem value="quad">Quad Room</SelectItem>
-                      <SelectItem value="studio">Studio</SelectItem>
-                      <SelectItem value="dormitory">Dormitory</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -90,7 +88,7 @@ export default async function CreateRoomPage(props: { params: { id: string } }) 
                   />
                 </div>
 
-                <div className="grid gap-4 sm:grid-cols-2">
+                {/* <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="room-size">Room Size (sq m)</Label>
                     <Input id="room-size" type="number" min="1" />
@@ -99,11 +97,11 @@ export default async function CreateRoomPage(props: { params: { id: string } }) 
                     <Label htmlFor="floor">Floor</Label>
                     <Input id="floor" type="number" min="0" />
                   </div>
-                </div>
+                </div> */}
               </CardContent>
               <CardFooter className="flex justify-between">
                 <Button variant="outline">Save as Draft</Button>
-                <Button>Continue to Details</Button>
+                <Button>Continue</Button>
               </CardFooter>
             </Card>
           </TabsContent>
@@ -132,7 +130,7 @@ export default async function CreateRoomPage(props: { params: { id: string } }) 
                     </div>
                   </div>
                 </div>
-
+                {/* 
                 <Separator />
 
                 <div className="space-y-2">
@@ -187,12 +185,12 @@ export default async function CreateRoomPage(props: { params: { id: string } }) 
                     placeholder="Any other details about the room that students should know"
                     className="min-h-[100px]"
                   />
-                </div>
+                </div> */}
               </CardContent>
-              <CardFooter className="flex justify-between">
+              {/* <CardFooter className="flex justify-between">
                 <Button variant="outline">Previous</Button>
-                <Button>Continue to Photos</Button>
-              </CardFooter>
+                <Button>Complete</Button>
+              </CardFooter> */}
             </Card>
           </TabsContent>
 
@@ -227,7 +225,7 @@ export default async function CreateRoomPage(props: { params: { id: string } }) 
               </CardContent>
               <CardFooter className="flex justify-between">
                 <Button variant="outline">Previous</Button>
-                <Button>Continue to Pricing</Button>
+                <Button>Complete</Button>
               </CardFooter>
             </Card>
           </TabsContent>

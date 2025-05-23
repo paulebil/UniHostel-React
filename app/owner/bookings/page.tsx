@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { hostels } from "@/lib/data"
-import { Calendar, ChevronRight, Download, Eye, Search } from "lucide-react"
+import { Calendar, Search } from "lucide-react"
 import Link from "next/link"
 import OwnerLayout from "@/components/owner-layout"
 import { Badge } from "@/components/ui/badge"
@@ -21,7 +21,7 @@ export default function OwnerBookingsPage() {
           <p className="text-muted-foreground">Manage all bookings across your properties</p>
         </div>
 
-        <div className="flex flex-col gap-4 sm:flex-row">
+        {/* <div className="flex flex-col gap-4 sm:flex-row">
           <div className="relative flex-1 mb-4">
             <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input placeholder="Search by booking ID, student name..." className="pl-9" />
@@ -51,14 +51,14 @@ export default function OwnerBookingsPage() {
               ))}
             </SelectContent>
           </Select>
-        </div>
+        </div> */}
 
         <Tabs defaultValue="active" className="space-y-4">
           <TabsList>
             <TabsTrigger value="active">Active Bookings</TabsTrigger>
-            <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
+            {/* <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
             <TabsTrigger value="past">Past Bookings</TabsTrigger>
-            <TabsTrigger value="cancelled">Cancelled</TabsTrigger>
+            <TabsTrigger value="cancelled">Cancelled</TabsTrigger> */}
           </TabsList>
 
           <TabsContent value="active">
@@ -100,7 +100,7 @@ export default function OwnerBookingsPage() {
                         </div>
                         <Button variant="ghost" size="icon" asChild>
                           <Link href={`/owner/bookings/${booking + 1000}`}>
-                            <ChevronRight className="h-4 w-4" />
+                            {/* <ChevronRight className="h-4 w-4" /> */}
                           </Link>
                         </Button>
                       </div>
@@ -111,7 +111,7 @@ export default function OwnerBookingsPage() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="upcoming">
+          {/* <TabsContent value="upcoming">
             <Card>
               <CardHeader>
                 <CardTitle>Upcoming Bookings (12)</CardTitle>
@@ -146,7 +146,6 @@ export default function OwnerBookingsPage() {
                         </div>
                         <Button variant="ghost" size="icon" asChild>
                           <Link href={`/owner/bookings/${booking + 2000}`}>
-                            <ChevronRight className="h-4 w-4" />
                           </Link>
                         </Button>
                       </div>
@@ -155,9 +154,9 @@ export default function OwnerBookingsPage() {
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
+          </TabsContent> */}
 
-          <TabsContent value="past">
+          {/* <TabsContent value="past">
             <Card>
               <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                 <div>
@@ -202,9 +201,9 @@ export default function OwnerBookingsPage() {
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
+          </TabsContent> */}
 
-          <TabsContent value="cancelled">
+          {/* <TabsContent value="cancelled">
             <Card>
               <CardHeader>
                 <CardTitle>Cancelled Bookings (5)</CardTitle>
@@ -242,7 +241,7 @@ export default function OwnerBookingsPage() {
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
+          </TabsContent> */}
         </Tabs>
       </div>
     </OwnerLayout>
