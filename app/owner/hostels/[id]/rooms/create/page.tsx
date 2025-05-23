@@ -10,7 +10,34 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Upload } from "lucide-react"
 import { getHostels } from "@/lib/data"
 import OwnerLayout from "@/components/owner-layout"
+import * as z from "zod";
 
+//Form validation schema
+const formSchema = z.object({
+  hostelName: z.string().min(2, {
+    message: "Hostel name is required",
+  }),
+  location: z.string().min(2, {
+    message: "Location is required",
+  }),
+  amenities: z.string().min(2, {
+    message: "Please enter at least some amenities.",
+  }),
+  price: z.string().min(1, {
+    message: "Price is required.",
+  }).regex(/^\d+$/, {
+    message: "Price must be a number.",
+  }),
+  rules: z.string().min(10, {
+    message: "Rules must be at least 10 characters.",
+  }),
+  description: z.string().min(20, {
+    message: "Description must be at least 20 characters.",
+  }),
+  photos: z.array(z.instanceof(File)).min(5, {
+    message: "You must upload at least 5 photos.",
+  }),
+});
 
 export default async function CreateRoomPage(props: { params: { id: string } }) {
 
@@ -46,13 +73,13 @@ export default async function CreateRoomPage(props: { params: { id: string } }) 
               <CardContent className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="room-no">Room Number</Label>
-                  <Input id="room-no" placeholder="e.g., A02" />
+                  <Input id="room-no" name="roomNo" placeholder="e.g., A02" />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="room-type">Room Type</Label>
                   <Select>
-                    <SelectTrigger id="room-type">
+                    <SelectTrigger id="room-type" name="roomType">
                       <SelectValue placeholder="Select room type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -66,7 +93,7 @@ export default async function CreateRoomPage(props: { params: { id: string } }) 
                 <div className="space-y-2">
                   <Label htmlFor="occupancy">Occupancy</Label>
                   <Select>
-                    <SelectTrigger id="occupancy">
+                    <SelectTrigger id="occupancy" name="occupancy">
                       <SelectValue placeholder="Select occupancy" />
                     </SelectTrigger>
                     <SelectContent>
@@ -83,6 +110,7 @@ export default async function CreateRoomPage(props: { params: { id: string } }) 
                   <Label htmlFor="description">Description</Label>
                   <Textarea
                     id="description"
+                    name="description"
                     placeholder="Provide a detailed description of the room"
                     className="min-h-[150px]"
                   />
@@ -315,6 +343,6 @@ export default async function CreateRoomPage(props: { params: { id: string } }) 
           </TabsContent>
         </Tabs>
       </div>
-    </OwnerLayout>
+    </OwnerLayout >
   )
 }
