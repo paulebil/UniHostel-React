@@ -93,31 +93,6 @@ export default function OwnerHostelsPage() {
                     <Button variant="outline" size="sm" asChild>
                       <Link href={`/owner/hostels/${hostel.id}/rooms`}>Manage Rooms</Link>
                     </Button>
-                    <Button variant="outline" size="sm" asChild>
-                      <Link href={`/owner/hostels/${hostel.id}`}>
-                        <Edit className="mr-2 h-3.5 w-3.5" />
-                        Edit
-                      </Link>
-                    </Button>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>View Bookings</DropdownMenuItem>
-                        <DropdownMenuItem>Preview Listing</DropdownMenuItem>
-                        <DropdownMenuItem>Deactivate</DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-red-600">
-                          <Trash className="mr-2 h-4 w-4" />
-                          Delete Hostel
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
                   </div>
                 </div>
               ))}

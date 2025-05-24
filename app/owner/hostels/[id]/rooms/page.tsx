@@ -94,13 +94,13 @@ export default async function OwnerRoomsPage(props: { params: { id: string } }) 
                     <Button variant="outline" size="sm" asChild>
                       <Link href={`/owner/hostels/${hostel.id}/rooms/${room.id}/bookings`}>Bookings</Link>
                     </Button>
-                    <Button variant="outline" size="sm" asChild>
+                    {/* <Button variant="outline" size="sm" asChild>
                       <Link href={`/owner/hostels/${hostel.id}/rooms/${room.id}`}>
                         <Edit className="mr-2 h-3.5 w-3.5" />
                         Edit
                       </Link>
-                    </Button>
-                    <DropdownMenu>
+                    </Button> */}
+                    {/* <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon" className="h-8 w-8">
                           <MoreHorizontal className="h-4 w-4" />
@@ -118,7 +118,7 @@ export default async function OwnerRoomsPage(props: { params: { id: string } }) 
                           Delete Room
                         </DropdownMenuItem>
                       </DropdownMenuContent>
-                    </DropdownMenu>
+                    </DropdownMenu> */}
                   </div>
                 </div>
               ))}
