@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -11,25 +13,24 @@ import { Upload } from "lucide-react"
 import { getHostels } from "@/lib/data"
 import OwnerLayout from "@/components/owner-layout"
 import * as z from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { toast } from "@/components/ui/use-toast";
+import { useState, useRef } from "react";
+
+
 
 //Form validation schema
 const formSchema = z.object({
-  hostelName: z.string().min(2, {
-    message: "Hostel name is required",
+  roomNo: z.string().min(2, {
+    message: "Room number is required",
   }),
-  location: z.string().min(2, {
-    message: "Location is required",
+  roomType: z.string().min(2, {
+    message: "Please select a room type",
   }),
-  amenities: z.string().min(2, {
-    message: "Please enter at least some amenities.",
-  }),
-  price: z.string().min(1, {
-    message: "Price is required.",
-  }).regex(/^\d+$/, {
-    message: "Price must be a number.",
-  }),
-  rules: z.string().min(10, {
-    message: "Rules must be at least 10 characters.",
+  occupancy: z.string().min(2, {
+    message: "Please select occupancy",
   }),
   description: z.string().min(20, {
     message: "Description must be at least 20 characters.",
@@ -40,6 +41,80 @@ const formSchema = z.object({
 });
 
 export default async function CreateRoomPage(props: { params: { id: string } }) {
+  const [activeTab, setActiveTab] = useState("basic");
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      roomNo: "",
+      roomType: "",
+      occupancy: "",
+      description: "",
+      photos: [],
+    },
+  });
+
+  function onSubmit(data: z.infer<typeof formSchema>) {
+    toast({
+      title: "Room created successfully",
+    });
+
+    const handleNext = async () => {
+      if (activeTab === "basic") {
+        const isValid = await form.trigger([
+          "roomNo",
+          "roomType",
+          "occupancy",
+          "description",
+        ]);
+        if (isValid) {
+          setActiveTab("photos");
+        }
+      }
+    };
+
+    //previous button 
+    const handlePrevious = () => {
+      if (activeTab === "photos") {
+        setActiveTab("basic");
+      }
+    };
+
+    //image upload
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files) {
+        const files = Array.from(e.target.files);
+
+        // Validate file types and sizes
+        const validFiles = files.filter(file =>
+          file.type.startsWith("image/") && file.size <= 10 * 1024 * 1024
+        );
+
+        // Update form value
+        form.setValue("photos", [...form.getValues("photos"), ...validFiles]);
+
+        // Create preview URLs
+        const newPreviewUrls = validFiles.map(file => URL.createObjectURL(file));
+        setPreviewUrls(prev => [...prev, ...newPreviewUrls]);
+      }
+    };
+
+    //to remove image
+    const removeImage = (index: number) => {
+      const updatedPhotos = [...form.getValues("photos")];
+      updatedPhotos.splice(index, 1);
+      form.setValue("photos", updatedPhotos);
+
+      const updatedPreviews = [...previewUrls];
+      URL.revokeObjectURL(updatedPreviews[index]);
+      updatedPreviews.splice(index, 1);
+      setPreviewUrls(updatedPreviews);
+    };
+    console.log(data);
+    // Here you would typically send the data to your API
+  }
 
   // Get params
   const { id } = await props.params

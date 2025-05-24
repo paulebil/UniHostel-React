@@ -160,67 +160,76 @@ export default function CreateHostelPage() {
                     <CardTitle>Hostel Information</CardTitle>
                     <CardDescription>Provide the details about your hostel</CardDescription>
                   </CardHeader>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-2">
+                      <CardContent className="space-y-6">
+                        <FormField
+                          control={form.control}
+                          name="hostelName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="font-bold">Hostel Name</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Enter the name of your hostel" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="location"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="font-bold">Location</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Enter hostel location" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </CardContent>
+                    </div>
+
+                    <div className="space-y-2">
+                      <CardContent className="space-y-6">
+                        <FormField
+                          control={form.control}
+                          name="amenities"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="font-bold">Amenities</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Enter hostel amenities (comma separated)" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="price"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="font-bold">Average Price</FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="Enter hostel average price"
+                                  type="number"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </CardContent>
+                    </div>
+                  </div>
                   <CardContent className="space-y-6">
-                    <FormField
-                      control={form.control}
-                      name="hostelName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="font-bold">Hostel Name</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter the name of your hostel" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="location"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="font-bold">Location</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter hostel location" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="amenities"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="font-bold">Amenities</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter hostel amenities (comma separated)" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="price"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="font-bold">Average Price</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Enter hostel average price"
-                              type="number"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
                     <FormField
                       control={form.control}
                       name="rules"
@@ -257,6 +266,7 @@ export default function CreateHostelPage() {
                       )}
                     />
                   </CardContent>
+
                   <CardFooter className="flex justify-between">
                     <Button variant="outline" type="button">Save as Draft</Button>
                     <Button
@@ -371,7 +381,7 @@ export default function CreateHostelPage() {
             </Tabs>
           </form>
         </Form>
-      </div>
-    </OwnerLayout>
+      </div >
+    </OwnerLayout >
   )
 }
