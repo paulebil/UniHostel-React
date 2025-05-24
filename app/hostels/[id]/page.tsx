@@ -277,9 +277,6 @@ export default async function HostelDetailsPage(props: { params: { id: string } 
                 <Button asChild className="w-full">
                   <Link href={`/hostels/${hostel.id}/rooms`}>View Rooms</Link>
                 </Button>
-                <Button variant="outline" className="w-full">
-                  Contact Hostel
-                </Button>
               </div>
 
               <div className="mt-6 text-center text-sm text-muted-foreground">

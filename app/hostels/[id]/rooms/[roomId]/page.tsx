@@ -333,9 +333,6 @@ export default async function RoomDetailsPage(props: { params: { id: string; roo
                 <Button asChild className="w-full">
                   <Link href={`/hostels/${hostel.id}/rooms/${room.id}/book`}>Book Now</Link>
                 </Button>
-                <Button variant="outline" className="w-full">
-                  Schedule Viewing
-                </Button>
               </div>
 
               <div className="mt-6 text-center text-sm text-muted-foreground">
