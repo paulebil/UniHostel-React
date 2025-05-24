@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -10,8 +12,109 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Upload } from "lucide-react"
 import { getHostels } from "@/lib/data"
 import OwnerLayout from "@/components/owner-layout"
+import * as z from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { toast } from "@/components/ui/use-toast";
+import { useState, useRef } from "react";
+
+
+
+//Form validation schema
+const formSchema = z.object({
+  roomNo: z.string().min(2, {
+    message: "Room number is required",
+  }),
+  roomType: z.string().min(2, {
+    message: "Please select a room type",
+  }),
+  occupancy: z.string().min(2, {
+    message: "Please select occupancy",
+  }),
+  description: z.string().min(20, {
+    message: "Description must be at least 20 characters.",
+  }),
+  photos: z.array(z.instanceof(File)).min(5, {
+    message: "You must upload at least 5 photos.",
+  }),
+});
 
 export default async function CreateRoomPage(props: { params: { id: string } }) {
+  const [activeTab, setActiveTab] = useState("basic");
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      roomNo: "",
+      roomType: "",
+      occupancy: "",
+      description: "",
+      photos: [],
+    },
+  });
+
+  function onSubmit(data: z.infer<typeof formSchema>) {
+    toast({
+      title: "Room created successfully",
+    });
+
+    const handleNext = async () => {
+      if (activeTab === "basic") {
+        const isValid = await form.trigger([
+          "roomNo",
+          "roomType",
+          "occupancy",
+          "description",
+        ]);
+        if (isValid) {
+          setActiveTab("photos");
+        }
+      }
+    };
+
+    //previous button 
+    const handlePrevious = () => {
+      if (activeTab === "photos") {
+        setActiveTab("basic");
+      }
+    };
+
+    //image upload
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files) {
+        const files = Array.from(e.target.files);
+
+        // Validate file types and sizes
+        const validFiles = files.filter(file =>
+          file.type.startsWith("image/") && file.size <= 10 * 1024 * 1024
+        );
+
+        // Update form value
+        form.setValue("photos", [...form.getValues("photos"), ...validFiles]);
+
+        // Create preview URLs
+        const newPreviewUrls = validFiles.map(file => URL.createObjectURL(file));
+        setPreviewUrls(prev => [...prev, ...newPreviewUrls]);
+      }
+    };
+
+    //to remove image
+    const removeImage = (index: number) => {
+      const updatedPhotos = [...form.getValues("photos")];
+      updatedPhotos.splice(index, 1);
+      form.setValue("photos", updatedPhotos);
+
+      const updatedPreviews = [...previewUrls];
+      URL.revokeObjectURL(updatedPreviews[index]);
+      updatedPreviews.splice(index, 1);
+      setPreviewUrls(updatedPreviews);
+    };
+    console.log(data);
+    // Here you would typically send the data to your API
+  }
 
   // Get params
   const { id } = await props.params
@@ -30,37 +133,34 @@ export default async function CreateRoomPage(props: { params: { id: string } }) 
 
         <Tabs defaultValue="basic" className="space-y-4">
           <TabsList>
-            <TabsTrigger value="basic">Basic Information</TabsTrigger>
-            <TabsTrigger value="details">Details & Amenities</TabsTrigger>
+            <TabsTrigger value="basic">Room Information</TabsTrigger>
+            {/* <TabsTrigger value="details">Details & Amenities</TabsTrigger> */}
             <TabsTrigger value="photos">Photos</TabsTrigger>
-            <TabsTrigger value="pricing">Pricing & Availability</TabsTrigger>
+            {/* <TabsTrigger value="pricing">Pricing & Availability</TabsTrigger> */}
           </TabsList>
 
           <TabsContent value="basic">
             <Card>
               <CardHeader>
-                <CardTitle>Basic Information</CardTitle>
+                <CardTitle>Room Information</CardTitle>
                 <CardDescription>Provide the essential details about this room</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="room-name">Room Name</Label>
-                  <Input id="room-name" placeholder="e.g., Deluxe Single Room, Standard Double Room" />
+                  <Label htmlFor="room-no">Room Number</Label>
+                  <Input id="room-no" name="roomNo" placeholder="e.g., A02" />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="room-type">Room Type</Label>
                   <Select>
-                    <SelectTrigger id="room-type">
+                    <SelectTrigger id="room-type" name="roomType">
                       <SelectValue placeholder="Select room type" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="single">Single Room</SelectItem>
                       <SelectItem value="double">Double Room</SelectItem>
                       <SelectItem value="triple">Triple Room</SelectItem>
-                      <SelectItem value="quad">Quad Room</SelectItem>
-                      <SelectItem value="studio">Studio</SelectItem>
-                      <SelectItem value="dormitory">Dormitory</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -68,7 +168,7 @@ export default async function CreateRoomPage(props: { params: { id: string } }) 
                 <div className="space-y-2">
                   <Label htmlFor="occupancy">Occupancy</Label>
                   <Select>
-                    <SelectTrigger id="occupancy">
+                    <SelectTrigger id="occupancy" name="occupancy">
                       <SelectValue placeholder="Select occupancy" />
                     </SelectTrigger>
                     <SelectContent>
@@ -85,12 +185,13 @@ export default async function CreateRoomPage(props: { params: { id: string } }) 
                   <Label htmlFor="description">Description</Label>
                   <Textarea
                     id="description"
+                    name="description"
                     placeholder="Provide a detailed description of the room"
                     className="min-h-[150px]"
                   />
                 </div>
 
-                <div className="grid gap-4 sm:grid-cols-2">
+                {/* <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="room-size">Room Size (sq m)</Label>
                     <Input id="room-size" type="number" min="1" />
@@ -99,11 +200,11 @@ export default async function CreateRoomPage(props: { params: { id: string } }) 
                     <Label htmlFor="floor">Floor</Label>
                     <Input id="floor" type="number" min="0" />
                   </div>
-                </div>
+                </div> */}
               </CardContent>
               <CardFooter className="flex justify-between">
                 <Button variant="outline">Save as Draft</Button>
-                <Button>Continue to Details</Button>
+                <Button>Continue</Button>
               </CardFooter>
             </Card>
           </TabsContent>
@@ -132,7 +233,7 @@ export default async function CreateRoomPage(props: { params: { id: string } }) 
                     </div>
                   </div>
                 </div>
-
+                {/* 
                 <Separator />
 
                 <div className="space-y-2">
@@ -187,12 +288,12 @@ export default async function CreateRoomPage(props: { params: { id: string } }) 
                     placeholder="Any other details about the room that students should know"
                     className="min-h-[100px]"
                   />
-                </div>
+                </div> */}
               </CardContent>
-              <CardFooter className="flex justify-between">
+              {/* <CardFooter className="flex justify-between">
                 <Button variant="outline">Previous</Button>
-                <Button>Continue to Photos</Button>
-              </CardFooter>
+                <Button>Complete</Button>
+              </CardFooter> */}
             </Card>
           </TabsContent>
 
@@ -227,7 +328,7 @@ export default async function CreateRoomPage(props: { params: { id: string } }) 
               </CardContent>
               <CardFooter className="flex justify-between">
                 <Button variant="outline">Previous</Button>
-                <Button>Continue to Pricing</Button>
+                <Button>Complete</Button>
               </CardFooter>
             </Card>
           </TabsContent>
@@ -317,6 +418,6 @@ export default async function CreateRoomPage(props: { params: { id: string } }) 
           </TabsContent>
         </Tabs>
       </div>
-    </OwnerLayout>
+    </OwnerLayout >
   )
 }

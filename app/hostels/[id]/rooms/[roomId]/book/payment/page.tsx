@@ -9,9 +9,9 @@ import { CreditCard, Lock, ShieldCheck } from "lucide-react"
 import Link from "next/link"
 
 export default async function PaymentPage(props: { params: { id: string; roomId: string } }) {
-    // Get params
+  // Get params
   const { id } = await props.params
-  const {roomId} = await props.params
+  const { roomId } = await props.params
 
   // Find the hostel by ID
   const hostel = hostels.find((h) => h.id === id) || hostels[0]
@@ -64,7 +64,7 @@ export default async function PaymentPage(props: { params: { id: string; roomId:
                 <Label htmlFor="name">Name on Card</Label>
                 <Input id="name" placeholder="Enter the name on your card" />
               </div>
-
+              {/* 
               <Separator />
 
               <div className="space-y-2">
@@ -97,7 +97,7 @@ export default async function PaymentPage(props: { params: { id: string; roomId:
                   <Label htmlFor="postal-code">Postal Code</Label>
                   <Input id="postal-code" placeholder="Enter your postal code" />
                 </div>
-              </div>
+              </div> */}
             </CardContent>
             <CardFooter className="flex-col space-y-4">
               <div className="flex items-center gap-2 rounded-lg bg-muted p-3 text-sm">

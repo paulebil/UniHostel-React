@@ -2,17 +2,17 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { getHostels } from "@/lib/data"
-import { Calendar, Check, Download, Home, Mail, MapPin, Phone, Printer } from "lucide-react"
+import { User, Check, Download, Home, Mail, MapPin, Phone, Printer } from "lucide-react"
 import Link from "next/link"
 
-export default async function ConfirmationPage( props: { params: { id: string; roomId: string } }) {
+export default async function ConfirmationPage(props: { params: { id: string; roomId: string } }) {
 
   // Get params
   const { id } = await props.params
-  const {roomId} = await props.params
+  const { roomId } = await props.params
 
   // Get all hostels
-  const hostels = await getHostels() 
+  const hostels = await getHostels()
 
   // Find the hostel by ID
   const hostel = hostels.find((h) => h.id === id) || hostels[0]
@@ -52,13 +52,13 @@ export default async function ConfirmationPage( props: { params: { id: string; r
               <div>
                 <h3 className="mb-2 font-semibold">Booking Details</h3>
                 <div className="space-y-1 text-sm">
-                  <div className="flex items-start gap-2">
+                  {/* <div className="flex items-start gap-2">
                     <Calendar className="mt-0.5 h-4 w-4 text-muted-foreground" />
                     <div>
                       <div>Move-in Date: September 1, 2023</div>
                       <div>Duration: 1 Semester (4-5 months)</div>
                     </div>
-                  </div>
+                  </div> */}
                   <div className="flex items-start gap-2">
                     <Home className="mt-0.5 h-4 w-4 text-muted-foreground" />
                     <div>
@@ -74,7 +74,7 @@ export default async function ConfirmationPage( props: { params: { id: string; r
                 <h3 className="mb-2 font-semibold">Student Information</h3>
                 <div className="space-y-1 text-sm">
                   <div className="flex items-center gap-2">
-                    <div className="h-4 w-4" />
+                    <User className="h-4 w-4 text-muted-foreground" />
                     <div>John Doe</div>
                   </div>
                   <div className="flex items-center gap-2">

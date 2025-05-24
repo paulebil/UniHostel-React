@@ -12,7 +12,7 @@ import ImageGallery from "@/components/image-gallery"
 export default async function HostelDetailsPage(props: { params: { id: string } }) {
   // Find the hostel by ID
   const { id } = await props.params
-  const hostels = await getHostels() 
+  const hostels = await getHostels()
   const hostel = hostels.find((h) => h.id === id) || hostels[0]
 
   return (
@@ -40,9 +40,9 @@ export default async function HostelDetailsPage(props: { params: { id: string } 
           <Tabs defaultValue="overview">
             <TabsList className="mb-6 grid w-full grid-cols-4">
               <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="rooms">Rooms</TabsTrigger>
-              <TabsTrigger value="amenities">Amenities</TabsTrigger>
-              <TabsTrigger value="reviews">Reviews</TabsTrigger>
+              {/* <TabsTrigger value="rooms">Rooms</TabsTrigger> */}
+              {/* <TabsTrigger value="amenities">Amenities</TabsTrigger>
+              <TabsTrigger value="reviews">Reviews</TabsTrigger> */}
             </TabsList>
 
             <TabsContent value="overview">
