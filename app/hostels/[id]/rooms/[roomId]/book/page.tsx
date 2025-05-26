@@ -1,3 +1,5 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -9,6 +11,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { getHostels } from "@/lib/data"
 import { Calendar, CreditCard, Info } from "lucide-react"
 import Link from "next/link"
+import { useState } from "react"
+
 
 export default async function BookingPage(props: { params: { id: string; roomId: string } }) {
   // Get params
@@ -29,7 +33,7 @@ export default async function BookingPage(props: { params: { id: string; roomId:
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6">
-        <Link href={`/hostels/${hostel.id}/rooms/${room.id}`} className="text-sm text-primary hover:underline">
+        <Link href={`/hostels/{hostel.id}/rooms/{room.id}`} className="text-sm text-primary hover:underline">
           &larr; Back to room details
         </Link>
         <h1 className="mt-2 text-3xl font-bold">Book Your Stay</h1>
@@ -150,7 +154,7 @@ export default async function BookingPage(props: { params: { id: string; roomId:
           </Card>
 
           <Card className="mt-8">
-            <CardHeader>
+            {/* <CardHeader>
               <CardTitle>Payment Method</CardTitle>
               <CardDescription>Choose how you want to pay for your booking</CardDescription>
             </CardHeader>
@@ -164,31 +168,19 @@ export default async function BookingPage(props: { params: { id: string; roomId:
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2 rounded-lg border p-4">
-                  <RadioGroupItem value="paypal" id="paypal" />
-                  <Label htmlFor="paypal" className="flex flex-1 cursor-pointer items-center gap-2">
+                  <RadioGroupItem value="mobieMoney" id="mobieMoney" />
+                  <Label htmlFor="mobieMoney" className="flex flex-1 cursor-pointer items-center gap-2">
                     <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 3.384a.77.77 0 0 1 .757-.645h6.71c2.925 0 5.017 1.873 4.79 4.568-.318 3.746-2.841 5.81-6.147 5.81H8.36l-.588 3.35a.77.77 0 0 1-.757.645H7.076v4.225zm.49-5.909l.563-3.423h2.606c1.713 0 2.834-.726 3.001-2.275.137-1.251-.638-2.108-2.092-2.108H9.012l-1.446 7.806zm9.913-10.08h-5.18l-.328 1.84h5.263c2.315 0 3.932 1.253 3.705 3.948-.318 3.746-2.84 5.81-6.147 5.81h-2.74l-.587 3.35a.77.77 0 0 1-.758.646h-.938l.328-1.838h.938a.641.641 0 0 0 .633-.74l.587-3.35h2.74c2.695 0 4.587-1.587 4.855-4.568.178-2.095-1.18-3.123-2.74-3.123h-5.263l.328-1.975h5.18c2.315 0 3.932 1.253 3.705 3.948-.318 3.746-2.84 5.81-6.147 5.81h-2.74l-.587 3.35a.77.77 0 0 1-.758.646h-.938l.328-1.838h.938a.641.641 0 0 0 .633-.74l.587-3.35h2.74c2.695 0 4.587-1.587 4.855-4.568.178-2.095-1.18-3.123-2.74-3.123z" />
+                      <path d="M17 2H7c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM7 4h10v12H7V4zm5 14c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z" />
                     </svg>
-                    PayPal
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2 rounded-lg border p-4">
-                  <RadioGroupItem value="bank" id="bank" />
-                  <Label htmlFor="bank" className="flex flex-1 cursor-pointer items-center gap-2">
-                    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <rect x="3" y="8" width="18" height="12" rx="2" />
-                      <path d="M7 8V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2" />
-                      <path d="M12 12v4" />
-                      <path d="M8 12h8" />
-                    </svg>
-                    Bank Transfer
+                    Mobile Money
                   </Label>
                 </div>
               </RadioGroup>
-            </CardContent>
+            </CardContent> */}
             <CardFooter>
               <Button asChild className="w-full">
-                <Link href={`/hostels/${hostel.id}/rooms/${room.id}/book/payment`}>Proceed to Payment</Link>
+                <Link href={`/hostels/{hostel.id}/rooms/{room.id}/book/payment`}>Proceed to Payment</Link>
               </Button>
             </CardFooter>
           </Card>
@@ -229,7 +221,7 @@ export default async function BookingPage(props: { params: { id: string; roomId:
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Monthly rent</span>
-                  <span>${room.price}</span>
+                  <span>{room.price}</span>
                 </div>
               </div>
 
@@ -238,11 +230,11 @@ export default async function BookingPage(props: { params: { id: string; roomId:
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Security deposit</span>
-                  <span>${room.price}</span>
+                  <span>{room.price}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Booking fee</span>
-                  <span>$100</span>
+                  <span>100</span>
                 </div>
               </div>
 
@@ -250,7 +242,7 @@ export default async function BookingPage(props: { params: { id: string; roomId:
 
               <div className="flex justify-between font-medium">
                 <span>Total due now</span>
-                <span>${room.price + 100}</span>
+                <span>{room.price + 100}</span>
               </div>
 
               <div className="rounded-lg bg-muted p-3 text-sm">

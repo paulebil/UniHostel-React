@@ -49,8 +49,8 @@ export default function HostelsPage() {
                   <h3 className="font-medium">Price Range</h3>
                   <Slider defaultValue={[0, 1000]} min={0} max={1000} step={10} />
                   <div className="flex items-center justify-between text-sm">
-                    <span>$0</span>
-                    <span>$1000</span>
+                    <span>0</span>
+                    <span>1000</span>
                   </div>
                 </div>
 
@@ -75,8 +75,8 @@ export default function HostelsPage() {
                   <div className="space-y-2">
                     {["Wi-Fi", "Laundry", "Kitchen", "Study Room", "Gym", "Air Conditioning"].map((amenity) => (
                       <div key={amenity} className="flex items-center space-x-2">
-                        <Checkbox id={`amenity-${amenity}`} />
-                        <Label htmlFor={`amenity-${amenity}`}>{amenity}</Label>
+                        <Checkbox id={`amenity-{amenity}`} />
+                        <Label htmlFor={`amenity-{amenity}`}>{amenity}</Label>
                       </div>
                     ))}
                   </div>
@@ -87,8 +87,8 @@ export default function HostelsPage() {
                   <div className="space-y-2">
                     {["Single", "Double", "Triple", "Quad", "Dormitory"].map((type) => (
                       <div key={type} className="flex items-center space-x-2">
-                        <Checkbox id={`type-${type}`} />
-                        <Label htmlFor={`type-${type}`}>{type}</Label>
+                        <Checkbox id={`type-{type}`} />
+                        <Label htmlFor={`type-{type}`}>{type}</Label>
                       </div>
                     ))}
                   </div>

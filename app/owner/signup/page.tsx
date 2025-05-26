@@ -24,7 +24,7 @@ const formSchema = z.object({
   }),
   phone: z.string().min(10, {
     message: "Please enter a valid phone number.",
-  }).regex(/^[0-9]+$/),
+  }).regex(/^[0-9]+/),
   password: z.string().min(8, {
     message: "Password must be at least 8 characters.",
   }),

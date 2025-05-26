@@ -34,7 +34,8 @@ export default async function OwnerRoomsPage(props: { params: { id: string } }) 
             <p className="text-muted-foreground">Manage and update your room listings</p>
           </div>
           <Button asChild>
-            <Link href={`/owner/hostels/${hostel.id}/rooms/create`}>
+            <Link href={`/owner/hostels/
+{hostel.id}/rooms/create`}>
               <Plus className="mr-2 h-4 w-4" />
               Add New Room
             </Link>
@@ -85,17 +86,22 @@ export default async function OwnerRoomsPage(props: { params: { id: string } }) 
                       <div className="mt-1 flex flex-wrap items-center gap-2">
                         <Badge variant="outline">{room.type}</Badge>
                         <Badge variant="outline">{room.ensuite ? "En-suite" : "Shared Bathroom"}</Badge>
-                        <span className="text-sm text-muted-foreground">${room.price}/month</span>
+                        <span className="text-sm text-muted-foreground">
+                          {room.price}/month</span>
                       </div>
                     </div>
                   </div>
 
                   <div className="flex flex-wrap items-center gap-2 sm:flex-nowrap">
                     <Button variant="outline" size="sm" asChild>
-                      <Link href={`/owner/hostels/${hostel.id}/rooms/${room.id}/bookings`}>Bookings</Link>
+                      <Link href={`/owner/hostels/
+{hostel.id}/rooms/
+{room.id}/bookings`}>Bookings</Link>
                     </Button>
                     {/* <Button variant="outline" size="sm" asChild>
-                      <Link href={`/owner/hostels/${hostel.id}/rooms/${room.id}`}>
+                      <Link href={`/owner/hostels/
+{hostel.id}/rooms/
+{room.id}`}>
                         <Edit className="mr-2 h-3.5 w-3.5" />
                         Edit
                       </Link>

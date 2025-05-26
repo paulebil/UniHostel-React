@@ -81,7 +81,7 @@ export default function OwnerBookingsPage() {
                         </div>
                         <div className="text-sm text-muted-foreground">
                           {
-                            ["Single Room", "Double Room", "Triple Room", "En-suite Single", "Double En-suite"][
+                            ["Single Room", "Double Room", "Triple Room"][
                             booking - 1
                             ]
                           }{" "}
@@ -99,7 +99,7 @@ export default function OwnerBookingsPage() {
                           <div className="text-sm text-muted-foreground">University of Example</div>
                         </div>
                         <Button variant="ghost" size="icon" asChild>
-                          <Link href={`/owner/bookings/${booking + 1000}`}>
+                          <Link href={`/owner/bookings/{booking + 1000}`}>
                             {/* <ChevronRight className="h-4 w-4" /> */}
                           </Link>
                         </Button>
@@ -145,7 +145,7 @@ export default function OwnerBookingsPage() {
                           <div className="text-sm text-muted-foreground">University of Example</div>
                         </div>
                         <Button variant="ghost" size="icon" asChild>
-                          <Link href={`/owner/bookings/${booking + 2000}`}>
+                          <Link href={`/owner/bookings/{booking + 2000}`}>
                           </Link>
                         </Button>
                       </div>

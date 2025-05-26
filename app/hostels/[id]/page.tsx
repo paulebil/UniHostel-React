@@ -51,7 +51,7 @@ export default async function HostelDetailsPage(props: { params: { id: string } 
                   <h2 className="mb-4 text-2xl font-semibold">About {hostel.name}</h2>
                   <p className="text-muted-foreground">
                     {hostel.description ||
-                      `${hostel.name} is a modern student accommodation located near ${hostel.location}. 
+                      `{hostel.name} is a modern student accommodation located near {hostel.location}. 
                     It offers comfortable rooms with all the amenities students need for a productive and enjoyable stay. 
                     The hostel is within walking distance of major universities and has excellent transport links.`}
                   </p>
@@ -222,7 +222,7 @@ export default async function HostelDetailsPage(props: { params: { id: string } 
                             .map((_, i) => (
                               <Star
                                 key={i}
-                                className={`h-4 w-4 ${i < 5 - (review % 2) ? "fill-yellow-400 text-yellow-400" : "text-muted"}`}
+                                className={`h-4 w-4 {i < 5 - (review % 2) ? "fill-yellow-400 text-yellow-400" : "text-muted"}`}
                               />
                             ))}
                         </div>
@@ -250,7 +250,7 @@ export default async function HostelDetailsPage(props: { params: { id: string } 
           <Card>
             <CardContent className="p-6">
               <div className="mb-4 text-2xl font-bold">
-                ${hostel.priceRange.min} - ${hostel.priceRange.max}
+                {hostel.priceRange.min} - {hostel.priceRange.max}
                 <span className="text-sm font-normal text-muted-foreground"> / month</span>
               </div>
 
@@ -275,10 +275,7 @@ export default async function HostelDetailsPage(props: { params: { id: string } 
 
               <div className="space-y-4">
                 <Button asChild className="w-full">
-                  <Link href={`/hostels/${hostel.id}/rooms`}>View Rooms</Link>
-                </Button>
-                <Button variant="outline" className="w-full">
-                  Contact Hostel
+                  <Link href={`/hostels/{hostel.id}/rooms`}>View Rooms</Link>
                 </Button>
               </div>
 

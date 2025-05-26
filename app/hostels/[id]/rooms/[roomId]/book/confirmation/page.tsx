@@ -25,7 +25,7 @@ export default async function ConfirmationPage(props: { params: { id: string; ro
   }
 
   // Generate a random booking reference
-  const bookingRef = `UH${Math.floor(10000 + Math.random() * 90000)}`
+  const bookingRef = `UH{Math.floor(10000 + Math.random() * 90000)}`
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -100,16 +100,16 @@ export default async function ConfirmationPage(props: { params: { id: string; ro
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Security deposit</span>
-                  <span>${room.price}</span>
+                  <span>{room.price}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Booking fee</span>
-                  <span>$100</span>
+                  <span>100</span>
                 </div>
                 <Separator className="my-2" />
                 <div className="flex justify-between font-medium">
                   <span>Total paid</span>
-                  <span>${room.price + 100}</span>
+                  <span>{room.price + 100}</span>
                 </div>
               </div>
             </div>
@@ -138,7 +138,7 @@ export default async function ConfirmationPage(props: { params: { id: string; ro
 
         <div className="flex flex-col gap-4 sm:flex-row sm:justify-between">
           <Button variant="outline" asChild>
-            <Link href={`/hostels/${hostel.id}`}>View Hostel Details</Link>
+            <Link href={`/hostels/{hostel.id}`}>View Hostel Details</Link>
           </Button>
           <Button asChild>
             <Link href="/">Return to Home</Link>

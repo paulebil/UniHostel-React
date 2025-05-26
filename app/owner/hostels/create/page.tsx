@@ -39,7 +39,7 @@ export default function CreateHostelPage() {
     }),
     price: z.string().min(1, {
       message: "Price is required.",
-    }).regex(/^\d+$/, {
+    }).regex(/^\d+/, {
       message: "Price must be a number.",
     }),
     rules: z.string().min(10, {
@@ -135,17 +135,17 @@ export default function CreateHostelPage() {
       const formData = new FormData();
       formData.append('file', photo);
       formData.append('folder', 'hostels'); // organize uploads by folder
-      
+
       try {
         const response = await fetch('/api/upload', {
           method: 'POST',
           body: formData,
         });
-        
+
         if (!response.ok) {
-          throw new Error(`Upload failed: ${response.statusText}`);
+          throw new Error(`Upload failed: {response.statusText}`);
         }
-        
+
         const result = await response.json();
         return result.url; // assuming your API returns { url: "..." }
       } catch (error) {
@@ -159,11 +159,11 @@ export default function CreateHostelPage() {
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
-    
+
     try {
       // 1. Upload photos first
       const photoUrls = await uploadPhotos(data.photos);
-      
+
       // 2. Prepare hostel data
       const hostelData = {
         hostelName: data.hostelName,
@@ -187,21 +187,21 @@ export default function CreateHostelPage() {
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to create hostel: ${response.statusText}`);
+        throw new Error(`Failed to create hostel: {response.statusText}`);
       }
 
       const result = await response.json();
-      
+
       toast({
         title: "Hostel created successfully!",
-        description: `${data.hostelName} has been added to your listings`,
+        description: `{data.hostelName} has been added to your listings`,
       });
 
       // Reset form and redirect
       form.reset();
       setPreviewUrls([]);
       router.push('/owner/hostels'); // or wherever you want to redirect
-      
+
     } catch (error) {
       console.error('Error creating hostel:', error);
       toast({
@@ -397,7 +397,7 @@ export default function CreateHostelPage() {
                                     <div key={index} className="relative group">
                                       <img
                                         src={url}
-                                        alt={`Hostel preview ${index + 1}`}
+                                        alt={`Hostel preview {index + 1}`}
                                         className="h-40 w-full object-cover rounded-lg"
                                       />
                                       <button

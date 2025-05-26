@@ -4,17 +4,17 @@ import Link from "next/link"
 import RoomCard from "@/components/room-card"
 
 export default async function RoomsPage(props: { params: { id: string } }) {
-    // Get params
+  // Get params
   const { id } = await props.params
-  
+
   // Find the hostel by ID
-  const hostels = await getHostels() 
+  const hostels = await getHostels()
   const hostel = hostels.find((h) => h.id === id) || hostels[0]
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6">
-        <Link href={`/hostels/${hostel.id}`} className="text-sm text-primary hover:underline">
+        <Link href={`/hostels/{hostel.id}`} className="text-sm text-primary hover:underline">
           &larr; Back to hostel details
         </Link>
         <h1 className="mt-2 text-3xl font-bold">Rooms at {hostel.name}</h1>
