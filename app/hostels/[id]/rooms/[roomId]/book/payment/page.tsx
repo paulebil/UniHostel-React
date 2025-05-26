@@ -32,7 +32,7 @@ export default function PaymentPage(props: { params: Promise<{ id: string; roomI
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6">
-        <Link href={`/hostels/${hostel.id}/rooms/${room.id}/book`} className="text-sm text-primary hover:underline">
+        <Link href={`/hostels/{hostel.id}/rooms/{room.id}/book`} className="text-sm text-primary hover:underline">
           &larr; Back to booking details
         </Link>
         <h1 className="mt-2 text-3xl font-bold">Payment</h1>
@@ -93,7 +93,7 @@ export default function PaymentPage(props: { params: Promise<{ id: string; roomI
                   </div>
 
                   <Button asChild className="w-full">
-                    <Link href={`/hostels/${hostel.id}/rooms/${room.id}/book/confirmation`}>
+                    <Link href={`/hostels/{hostel.id}/rooms/{room.id}/book/confirmation`}>
                       Pay {room.price + 100}
                     </Link>
                   </Button>
@@ -169,7 +169,7 @@ export default function PaymentPage(props: { params: Promise<{ id: string; roomI
                     asChild={selectedProvider ? true : false}
                   >
                     {selectedProvider ? (
-                      <Link href={`/hostels/${hostel.id}/rooms/${room.id}/book/confirmation`}>
+                      <Link href={`/hostels/{hostel.id}/rooms/{room.id}/book/confirmation`}>
                         Pay {room.price + 100} via {selectedProvider.toUpperCase()}
                       </Link>
                     ) : (

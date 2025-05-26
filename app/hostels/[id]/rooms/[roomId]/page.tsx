@@ -28,7 +28,7 @@ export default async function RoomDetailsPage(props: { params: { id: string; roo
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6">
-        <Link href={`/hostels/${hostel.id}/rooms`} className="text-sm text-primary hover:underline">
+        <Link href={`/hostels/{hostel.id}/rooms`} className="text-sm text-primary hover:underline">
           &larr; Back to rooms
         </Link>
         <h1 className="mt-2 text-3xl font-bold">{room.name}</h1>
@@ -54,7 +54,7 @@ export default async function RoomDetailsPage(props: { params: { id: string; roo
                   <h2 className="mb-4 text-2xl font-semibold">About this Room</h2>
                   <p className="text-muted-foreground">
                     {room.description ||
-                      `This ${room.type} room offers a comfortable living space for students. 
+                      `This {room.type} room offers a comfortable living space for students. 
                     It comes fully furnished with all the essentials you need for a productive academic year. 
                     The room is designed to maximize space and provide a conducive environment for both studying and relaxing.`}
                   </p>
@@ -266,7 +266,7 @@ export default async function RoomDetailsPage(props: { params: { id: string; roo
                     <li>Minimum stay: 1 semester (4-5 months)</li>
                     <li>Security deposit: Equal to one month's rent</li>
                     <li>Payment options: Monthly, semester, or annual payments</li>
-                    <li>Booking fee: $100 (non-refundable, applied to first month's rent)</li>
+                    <li>Booking fee: 100 (non-refundable, applied to first month's rent)</li>
                   </ul>
                 </div>
 
@@ -300,7 +300,7 @@ export default async function RoomDetailsPage(props: { params: { id: string; roo
           <Card className="sticky top-8">
             <CardContent className="p-6">
               <div className="mb-4 text-2xl font-bold">
-                ${room.price}
+                {room.price}
                 <span className="text-sm font-normal text-muted-foreground"> / month</span>
               </div>
 
@@ -331,7 +331,7 @@ export default async function RoomDetailsPage(props: { params: { id: string; roo
 
               <div className="space-y-4">
                 <Button asChild className="w-full">
-                  <Link href={`/hostels/${hostel.id}/rooms/${room.id}/book`}>Book Now</Link>
+                  <Link href={`/hostels/{hostel.id}/rooms/{room.id}/book`}>Book Now</Link>
                 </Button>
               </div>
 

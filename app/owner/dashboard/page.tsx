@@ -61,7 +61,7 @@ export default function OwnerDashboardPage() {
               <CreditCard className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">$12,450</div>
+              <div className="text-2xl font-bold">12,450</div>
               <p className="text-xs text-muted-foreground">+15% from last month</p>
             </CardContent>
           </Card>
@@ -98,7 +98,7 @@ export default function OwnerDashboardPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="text-right">
-                          <div className="font-medium">${300 + booking * 50}</div>
+                          <div className="font-medium">{300 + booking * 50}</div>
                           <div className="text-sm text-muted-foreground">per month</div>
                         </div>
                         <Button variant="ghost" size="icon">
@@ -144,7 +144,7 @@ export default function OwnerDashboardPage() {
                         </div>
                       </div>
                       <Button variant="ghost" size="icon" asChild>
-                        <Link href={`/owner/hostels/${hostel.id}`}>
+                        <Link href={`/owner/hostels/{hostel.id}`}>
                           <ChevronRight className="h-4 w-4" />
                         </Link>
                       </Button>

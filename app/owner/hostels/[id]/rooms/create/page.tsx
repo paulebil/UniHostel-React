@@ -139,17 +139,17 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
       const formData = new FormData();
       formData.append('file', photo);
       formData.append('folder', 'rooms'); // organize uploads by folder
-      
+
       try {
         const response = await fetch('/api/upload', {
           method: 'POST',
           body: formData,
         });
-        
+
         if (!response.ok) {
-          throw new Error(`Upload failed: ${response.statusText}`);
+          throw new Error(`Upload failed: {response.statusText}`);
         }
-        
+
         const result = await response.json();
         return result.url; // assuming your API returns { url: "..." }
       } catch (error) {
@@ -163,11 +163,11 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
-    
+
     try {
       // 1. Upload photos first
       const photoUrls = await uploadPhotos(data.photos);
-      
+
       // 2. Prepare room data
       const roomData = {
         roomNo: data.roomNo,
@@ -180,7 +180,7 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
       };
 
       // 3. Submit room data to your backend
-      const response = await fetch(`/api/hostels/${hostel.id}/rooms`, {
+      const response = await fetch(`/api/hostels/{hostel.id}/rooms`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -189,21 +189,21 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to create room: ${response.statusText}`);
+        throw new Error(`Failed to create room: {response.statusText}`);
       }
 
       const result = await response.json();
-      
+
       toast({
         title: "Room created successfully!",
-        description: `Room ${data.roomNo} has been added to ${hostel.name}`,
+        description: `Room {data.roomNo} has been added to {hostel.name}`,
       });
 
       // Reset form and redirect
       form.reset();
       setPreviewUrls([]);
-      router.push(`/owner/hostels/${hostel.id}/rooms`);
-      
+      router.push(`/owner/hostels/{hostel.id}/rooms`);
+
     } catch (error) {
       console.error('Error creating room:', error);
       toast({
@@ -377,7 +377,7 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
                                     <div key={index} className="relative group">
                                       <img
                                         src={url}
-                                        alt={`Preview ${index + 1}`}
+                                        alt={`Preview {index + 1}`}
                                         className="w-full h-32 object-cover rounded-lg"
                                       />
                                       <button
