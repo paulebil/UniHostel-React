@@ -32,6 +32,13 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
     roomNo: z.string().min(1, {
       message: "Room number is required",
     }),
+
+    price: z.string().min(1, {
+      message: "Price per semester is required",
+    }).refine(value => !isNaN(Number(value)), {
+      message: "Price must be a valid number",
+    }),
+
     roomType: z.string().min(1, {
       message: "Please select a room type",
     }),
@@ -53,6 +60,7 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
     resolver: zodResolver(formSchema),
     defaultValues: {
       roomNo: "",
+      price: "",
       roomType: "",
       occupancy: "",
       description: "",
@@ -79,6 +87,7 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
     if (activeTab === "basic") {
       const isValid = await form.trigger([
         "roomNo",
+        "price",
         "roomType",
         "occupancy",
         "description",
@@ -171,6 +180,7 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
       // 2. Prepare room data
       const roomData = {
         roomNo: data.roomNo,
+        price: parseFloat(data.price.replace(/,/g, '')), // Convert to number
         roomType: data.roomType,
         occupancy: parseInt(data.occupancy),
         description: data.description,
@@ -243,67 +253,83 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
                     <CardDescription>Provide the essential details about this room</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    <FormField
-                      control={form.control}
-                      name="roomNo"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Room Number</FormLabel>
-                          <FormControl>
-                            <Input placeholder="e.g., A02" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="roomType"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Room Type</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <FormField
+                        control={form.control}
+                        name="roomNo"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Room Number</FormLabel>
                             <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select room type" />
-                              </SelectTrigger>
+                              <Input placeholder="e.g., A02" {...field} />
                             </FormControl>
-                            <SelectContent>
-                              <SelectItem value="single">Single Room</SelectItem>
-                              <SelectItem value="double">Double Room</SelectItem>
-                              <SelectItem value="triple">Triple Room</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                    <FormField
-                      control={form.control}
-                      name="occupancy"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Occupancy</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormField
+                        control={form.control}
+                        name="price"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Price Per Semester</FormLabel>
                             <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select occupancy" />
-                              </SelectTrigger>
+                              <Input placeholder="900,000" {...field} />
                             </FormControl>
-                            <SelectContent>
-                              <SelectItem value="1">1 Person</SelectItem>
-                              <SelectItem value="2">2 People</SelectItem>
-                              <SelectItem value="3">3 People</SelectItem>
-                              <SelectItem value="4">4 People</SelectItem>
-                              <SelectItem value="5+">5+ People</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="roomType"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Room Type</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select room type" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="single">Single Room</SelectItem>
+                                <SelectItem value="double">Double Room</SelectItem>
+                                <SelectItem value="triple">Triple Room</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="occupancy"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Occupancy</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select occupancy" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="1">1 Person</SelectItem>
+                                <SelectItem value="2">2 People</SelectItem>
+                                <SelectItem value="3">3 People</SelectItem>
+                                <SelectItem value="4">4 People</SelectItem>
+                                <SelectItem value="5+">5+ People</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
 
                     <FormField
                       control={form.control}
@@ -423,6 +449,6 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
           </form>
         </Form>
       </div>
-    </OwnerLayout>
+    </OwnerLayout >
   )
 }
