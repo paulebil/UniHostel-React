@@ -38,7 +38,7 @@ export default function Header() {
     >
       <div className="container flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <span className="text-xl font-bold ml-12">UniHostel</span>
+          <h1 className="text-4xl font-bold ml-12">Uni<span className="text-indigo-600">Hostel</span></h1>
         </Link>
 
         {isMobile ? (
