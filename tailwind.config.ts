@@ -11,39 +11,40 @@ const config: Config = {
 	theme: {
 		extend: {
 			colors: {
-				background: 'hsl(var(--background))',
-				foreground: 'hsl(var(--foreground))',
+				background: 'hsl(210, 20%, 98%)', // #F9FAFB
+				foreground: 'hsl(222, 33%, 17%)', // #1F2937
+
 				card: {
-					DEFAULT: 'hsl(var(--card))',
-					foreground: 'hsl(var(--card-foreground))'
+					DEFAULT: 'hsl(0, 0%, 100%)',
+					foreground: 'hsl(222, 33%, 17%)',
 				},
 				popover: {
-					DEFAULT: 'hsl(var(--popover))',
-					foreground: 'hsl(var(--popover-foreground))'
+					DEFAULT: 'hsl(0, 0%, 100%)',
+					foreground: 'hsl(222, 33%, 17%)',
 				},
 				primary: {
-					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					DEFAULT: 'hsl(243, 77%, 58%)',   // #4F46E5
+					foreground: 'hsl(0, 0%, 100%)',
 				},
 				secondary: {
-					DEFAULT: 'hsl(var(--secondary))',
-					foreground: 'hsl(var(--secondary-foreground))'
-				},
-				muted: {
-					DEFAULT: 'hsl(var(--muted))',
-					foreground: 'hsl(var(--muted-foreground))'
+					DEFAULT: 'hsl(187, 72%, 61%)',   // #22D3EE
+					foreground: 'hsl(222, 33%, 17%)',
 				},
 				accent: {
-					DEFAULT: 'hsl(var(--accent))',
-					foreground: 'hsl(var(--accent-foreground))'
+					DEFAULT: 'hsl(243, 77%, 58%)',
+					foreground: 'hsl(0, 0.00%, 100.00%)',
+				},
+				muted: {
+					DEFAULT: 'hsl(210, 40%, 96%)',
+					foreground: 'hsl(0, 0.00%, 0.00%)',
 				},
 				destructive: {
-					DEFAULT: 'hsl(var(--destructive))',
-					foreground: 'hsl(var(--destructive-foreground))'
+					DEFAULT: 'hsl(0, 84%, 60%)',
+					foreground: 'hsl(0, 0%, 100%)',
 				},
-				border: 'hsl(var(--border))',
-				input: 'hsl(var(--input))',
-				ring: 'hsl(var(--ring))',
+				border: 'hsl(214, 32%, 91%)',
+				input: 'hsl(214, 32%, 91%)',
+				ring: 'hsl(243, 77%, 58%)',
 				chart: {
 					'1': 'hsl(var(--chart-1))',
 					'2': 'hsl(var(--chart-2))',
