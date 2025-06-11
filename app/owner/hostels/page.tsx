@@ -115,7 +115,10 @@ export default function OwnerHostelsPage() {
 
                     <div className="flex flex-wrap items-center gap-2 sm:flex-nowrap">
                       <Button variant="outline" size="sm" asChild>
-                        <Link href={`/owner/hostels/${hostel.id}/rooms`}>Manage Rooms</Link>
+                        <Link href={`/owner/hostels/${hostel.id}/rooms`}>
+                          <Users className="mr-2 h-4 w-4" />
+                          Manage Rooms
+                        </Link>
                       </Button>
                     </div>
                   </div>
