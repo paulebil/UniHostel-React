@@ -11,6 +11,8 @@ import * as z from "zod";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
+import api from "@/lib/axios";
+
 
 // Define validation schema
 const formSchema = z.object({
@@ -32,39 +34,29 @@ export default function OwnerLoginPage() {
     },
   });
 
+  // Handle form submission
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      // Replace with your actual authentication logic
-      const response = await fetch('/api/owner/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(values),
+      const response = await api.post("/owner/login", values); // or whatever your endpoint is
+
+      toast({
+        title: "Login successful",
+        description: "You are now being redirected to your dashboard.",
       });
 
-      if (response.ok) {
-        toast({
-          title: "Login successful",
-          description: "You are now being redirected to your dashboard.",
-        });
-        router.push("/owner/dashboard");
-      } else {
-        const errorData = await response.json();
-        toast({
-          title: "Login failed",
-          description: errorData.message || "Invalid credentials",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
+      router.push("/owner/dashboard");
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || "Invalid credentials or server error";
+
       toast({
-        title: "An error occurred",
-        description: "Please try again later.",
+        title: "Login failed",
+        description: errorMessage,
         variant: "destructive",
       });
     }
   }
+
 
   return (
     <div className="container mx-auto flex min-h-[calc(100vh-200px)] max-w-md flex-col items-center justify-center px-4 py-12">

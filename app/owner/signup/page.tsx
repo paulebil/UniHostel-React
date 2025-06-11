@@ -11,6 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { toast } from "@/components/ui/use-toast";
+import api from "@/lib/axios";
 
 const formSchema = z.object({
   firstName: z.string().min(2, {
@@ -53,13 +54,25 @@ export default function OwnerSignupPage() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    toast({
-      title: "Account created successfully!",
-      description: "Your owner account has been created.",
-    });
-    console.log(values);
+  // Handle form submission
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      await api.post("/owners/signup", values);
+      toast({
+        title: "Account created successfully!",
+        description: "Your owner account has been created.",
+      });
+      form.reset(); // optional
+    } catch (error: any) {
+      toast({
+        title: "Signup failed",
+        description: error?.response?.data?.message || "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+      console.error(error);
+    }
   }
+
 
   return (
     <div className="container mx-auto flex min-h-[calc(100vh-200px)] max-w-xl flex-col items-center justify-center px-4 py-12">
