@@ -5,9 +5,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Upload, X } from "lucide-react"
 import OwnerLayout from "@/components/owner-layout"
@@ -18,6 +15,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { toast } from "@/components/ui/use-toast";
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import api from "@/lib/axios";
 
 export default function CreateHostelPage() {
   const [activeTab, setActiveTab] = useState("basic");
@@ -28,27 +26,30 @@ export default function CreateHostelPage() {
 
   // Move schema inside component to avoid SSR issues with File constructor
   const formSchema = z.object({
-    hostelName: z.string().min(2, {
+    name: z.string().min(2, {
       message: "Hostel name is required",
     }),
     location: z.string().min(2, {
       message: "Location is required",
     }),
+    available_rooms: z.string().min(2, {
+      message: "Number of available rooms is required",
+    }),
     amenities: z.string().min(2, {
       message: "Please enter at least some amenities.",
     }),
-    price: z.string().min(1, {
+    average_price: z.string().min(1, {
       message: "Price is required.",
     }).regex(/^\d+/, {
       message: "Price must be a number.",
     }),
-    rules: z.string().min(10, {
+    rules_and_regulations: z.string().min(10, {
       message: "Rules must be at least 10 characters.",
     }),
     description: z.string().min(20, {
       message: "Description must be at least 20 characters.",
     }),
-    photos: z.array(z.any()).min(5, {
+    images: z.array(z.any()).min(5, {
       message: "You must upload at least 5 photos.",
     }).refine(
       (files) => files.every(file => file instanceof File),
@@ -59,24 +60,25 @@ export default function CreateHostelPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      hostelName: "",
+      name: "",
       location: "",
       amenities: "",
-      price: "",
-      rules: "",
+      average_price: "",
+      available_rooms: "",
+      rules_and_regulations: "",
       description: "",
-      photos: [],
+      images: [],
     },
   });
-
   const handleNext = async () => {
     if (activeTab === "basic") {
       const isValid = await form.trigger([
-        "hostelName",
+        "name",
         "location",
         "amenities",
-        "price",
-        "rules",
+        "average_price",
+        "available_rooms",
+        "rules_and_regulations",
         "description",
       ]);
       if (isValid) {
@@ -84,7 +86,6 @@ export default function CreateHostelPage() {
       }
     }
   };
-
   const handlePrevious = () => {
     if (activeTab === "photos") {
       setActiveTab("basic");
@@ -109,8 +110,8 @@ export default function CreateHostelPage() {
       }
 
       // Update form value
-      const currentPhotos = form.getValues("photos");
-      form.setValue("photos", [...currentPhotos, ...validFiles]);
+      const currentPhotos = form.getValues("images");
+      form.setValue("images", [...currentPhotos, ...validFiles]);
 
       // Create preview URLs
       const newPreviewUrls = validFiles.map(file => URL.createObjectURL(file));
@@ -119,9 +120,9 @@ export default function CreateHostelPage() {
   };
 
   const removeImage = (index: number) => {
-    const updatedPhotos = [...form.getValues("photos")];
+    const updatedPhotos = [...form.getValues("images")];
     updatedPhotos.splice(index, 1);
-    form.setValue("photos", updatedPhotos);
+    form.setValue("images", updatedPhotos);
 
     const updatedPreviews = [...previewUrls];
     URL.revokeObjectURL(updatedPreviews[index]);
@@ -129,90 +130,53 @@ export default function CreateHostelPage() {
     setPreviewUrls(updatedPreviews);
   };
 
-  // Upload photos to your storage service (e.g., AWS S3, Cloudinary, etc.)
-  const uploadPhotos = async (photos: File[]): Promise<string[]> => {
-    const uploadPromises = photos.map(async (photo) => {
-      const formData = new FormData();
-      formData.append('file', photo);
-      formData.append('folder', 'hostels'); // organize uploads by folder
-
-      try {
-        const response = await fetch('/api/upload', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (!response.ok) {
-          throw new Error(`Upload failed: {response.statusText}`);
-        }
-
-        const result = await response.json();
-        return result.url; // assuming your API returns { url: "..." }
-      } catch (error) {
-        console.error('Error uploading photo:', error);
-        throw error;
-      }
-    });
-
-    return Promise.all(uploadPromises);
-  };
-
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
 
     try {
-      // 1. Upload photos first
-      const photoUrls = await uploadPhotos(data.photos);
+      const formData = new FormData();
 
-      // 2. Prepare hostel data
-      const hostelData = {
-        hostelName: data.hostelName,
-        location: data.location,
-        amenities: data.amenities.split(',').map(a => a.trim()), // Convert to array
-        price: parseInt(data.price),
-        rules: data.rules,
-        description: data.description,
-        photos: photoUrls,
-        createdAt: new Date().toISOString(),
-        status: 'pending', // or 'active' depending on your business logic
-      };
+      // Append textual form fields
+      formData.append("name", data.name);
+      formData.append("location", data.location);
+      formData.append("available_rooms", data.available_rooms.toString());
+      formData.append("average_price", data.average_price.toString());
+      formData.append("description", data.description);
+      formData.append("rules_and_regulations", data.rules_and_regulations);
+      formData.append("amenities", data.amenities); // as a comma-separated string
 
-      // 3. Submit hostel data to your backend
-      const response = await fetch('/api/hostels', {
-        method: 'POST',
+      // Append images (assuming data.images is an array of File)
+      data.images.forEach((image) => {
+        formData.append("images", image);
+      });
+
+      // Send the request
+      await api.post("/hostels/create", formData, {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "multipart/form-data",
         },
-        body: JSON.stringify(hostelData),
       });
 
-      if (!response.ok) {
-        throw new Error(`Failed to create hostel: {response.statusText}`);
-      }
+      alert(
+        "Hostel created successfully!",
+      );
 
-      const result = await response.json();
-
-      toast({
-        title: "Hostel created successfully!",
-        description: `{data.hostelName} has been added to your listings`,
-      });
-
-      // Reset form and redirect
       form.reset();
       setPreviewUrls([]);
-      router.push('/owner/hostels'); // or wherever you want to redirect
+      router.push("/owner/hostels");
 
-    } catch (error) {
-      console.error('Error creating hostel:', error);
+    } catch (error: any) {
+      console.error("Error creating hostel:", error);
       toast({
         title: "Error creating hostel",
-        description: error instanceof Error ? error.message : "Something went wrong. Please try again.",
+        description: error?.response?.data?.message || "Something went wrong. Please try again.",
         variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
     }
   }
+
 
   return (
     <OwnerLayout>
@@ -241,7 +205,7 @@ export default function CreateHostelPage() {
                       <CardContent className="space-y-6">
                         <FormField
                           control={form.control}
-                          name="hostelName"
+                          name="name"
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel className="font-bold">Hostel Name</FormLabel>
@@ -287,7 +251,7 @@ export default function CreateHostelPage() {
 
                         <FormField
                           control={form.control}
-                          name="price"
+                          name="average_price"
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel className="font-bold">Average Price</FormLabel>
@@ -302,13 +266,29 @@ export default function CreateHostelPage() {
                             </FormItem>
                           )}
                         />
+
+                        <FormField
+                          control={form.control}
+                          name="available_rooms"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="font-bold">Available rooms</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Enter available rooms" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                       </CardContent>
+
                     </div>
+
                   </div>
                   <CardContent className="space-y-6">
                     <FormField
                       control={form.control}
-                      name="rules"
+                      name="rules_and_regulations"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="font-bold">Rules and Regulations</FormLabel>
@@ -361,7 +341,7 @@ export default function CreateHostelPage() {
                   <CardContent className="space-y-6">
                     <FormField
                       control={form.control}
-                      name="photos"
+                      name="images"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Hostel Photos</FormLabel>

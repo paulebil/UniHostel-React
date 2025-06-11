@@ -1,23 +1,46 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import api from "@/lib/axios";
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { hostels } from "@/lib/data"
-import { Edit, MoreHorizontal, Plus, Search, Star, Trash, Users } from "lucide-react"
-import Link from "next/link"
-import OwnerLayout from "@/components/owner-layout"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select"
+import { Edit, MoreHorizontal, Plus, Search, Star, Trash, Users } from "lucide-react"
+import OwnerLayout from "@/components/owner-layout"
 
 export default function OwnerHostelsPage() {
-  // For demo purposes, we'll assume the owner owns the first 3 hostels
-  const ownerHostels = hostels.slice(0, 3)
+  const [ownerHostels, setOwnerHostels] = useState<any[]>([])
+
+  useEffect(() => {
+    const fetchHostels = async () => {
+      try {
+        const response = await api.get("/hostels/my-hostels", {
+          headers: {
+          },
+        })
+        console.log("API response:", response.data.hostels)
+
+        // Handle both cases: data is array or object containing array
+        const hostelsArray = Array.isArray(response.data)
+          ? response.data
+          : response.data.hostels || []
+
+        setOwnerHostels(hostelsArray)
+      } catch (error) {
+        console.error("Error fetching hostels:", error)
+      }
+    }
+
+    fetchHostels()
+  }, [])
 
   return (
     <OwnerLayout>
@@ -59,44 +82,48 @@ export default function OwnerHostelsPage() {
             <CardDescription>View and manage all your hostel properties</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {ownerHostels.map((hostel) => (
-                <div
-                  key={hostel.id}
-                  className="flex flex-col gap-4 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="h-20 w-20 overflow-hidden rounded-md bg-muted">
-                      <img
-                        src="/placeholder.svg?height=80&width=80"
-                        alt={hostel.name}
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
-                    <div>
-                      <h3 className="font-medium">{hostel.name}</h3>
-                      <p className="text-sm text-muted-foreground">{hostel.location}</p>
-                      <div className="mt-1 flex items-center gap-4">
-                        <div className="flex items-center gap-1 text-sm">
-                          <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
-                          <span>{hostel.rating}</span>
-                        </div>
-                        <div className="flex items-center gap-1 text-sm">
-                          <Users className="h-3.5 w-3.5 text-muted-foreground" />
-                          <span>{hostel.rooms?.length || 0} rooms</span>
+            {Array.isArray(ownerHostels) && ownerHostels.length > 0 ? (
+              <div className="space-y-4">
+                {ownerHostels.map((hostel) => (
+                  <div
+                    key={hostel.id}
+                    className="flex flex-col gap-4 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="h-20 w-20 overflow-hidden rounded-md bg-muted">
+                        <img
+                          src={hostel.image_url?.[0]?.url || "/placeholder.svg?height=80&width=80"}
+                          alt={hostel.name}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                      <div>
+                        <h3 className="font-medium">{hostel.name}</h3>
+                        <p className="text-sm text-muted-foreground">{hostel.location}</p>
+                        <div className="mt-1 flex items-center gap-4">
+                          <div className="flex items-center gap-1 text-sm">
+                            <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
+                            <span>{hostel.rating || "N/A"}</span>
+                          </div>
+                          <div className="flex items-center gap-1 text-sm">
+                            <Users className="h-3.5 w-3.5 text-muted-foreground" />
+                            <span>{hostel.rooms?.length || 0} rooms</span>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="flex flex-wrap items-center gap-2 sm:flex-nowrap">
-                    <Button variant="outline" size="sm" asChild>
-                      <Link href={`/owner/hostels/{hostel.id}/rooms`}>Manage Rooms</Link>
-                    </Button>
+                    <div className="flex flex-wrap items-center gap-2 sm:flex-nowrap">
+                      <Button variant="outline" size="sm" asChild>
+                        <Link href={`/owner/hostels/${hostel.id}/rooms`}>Manage Rooms</Link>
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <p>No hostels found.</p>
+            )}
           </CardContent>
         </Card>
       </div>
