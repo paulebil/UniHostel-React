@@ -1,14 +1,60 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { hostels } from "@/lib/data"
-import { Building, Calendar, ChevronRight, CreditCard, Home, Plus, Users } from "lucide-react"
-import Link from "next/link"
-import OwnerLayout from "@/components/owner-layout"
+"use client";
+
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger
+} from "@/components/ui/tabs";
+import {
+  Building,
+  Calendar,
+  ChevronRight,
+  CreditCard,
+  Home,
+  Plus,
+  Users
+} from "lucide-react";
+import Link from "next/link";
+import OwnerLayout from "@/components/owner-layout";
+import api from "@/lib/axios";
 
 export default function OwnerDashboardPage() {
-  // For demo purposes, we'll assume the owner owns the first 3 hostels
-  const ownerHostels = hostels.slice(0, 3)
+  const [ownerHostels, setOwnerHostels] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchOwnerData() {
+      try {
+        const response = await api.get("/owner/dashboard");
+        // Assuming the response returns an object like:
+        // { hostels: [...], bookings: [...], revenue: 12450 }
+
+        setOwnerHostels(response.data.hostels || []);
+      } catch (error) {
+        console.error("Failed to fetch dashboard data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchOwnerData();
+  }, []);
+
+  const totalRooms = ownerHostels.reduce(
+    (acc, hostel) => acc + (hostel.rooms?.length || 0),
+    0
+  );
 
   return (
     <OwnerLayout>
@@ -39,9 +85,7 @@ export default function OwnerDashboardPage() {
               <Home className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {ownerHostels.reduce((acc, hostel) => acc + (hostel.rooms?.length || 0), 0)}
-              </div>
+              <div className="text-2xl font-bold">{totalRooms}</div>
               <p className="text-xs text-muted-foreground">+5 from last month</p>
             </CardContent>
           </Card>
@@ -72,7 +116,9 @@ export default function OwnerDashboardPage() {
             <TabsTrigger value="bookings">Recent Bookings</TabsTrigger>
             <TabsTrigger value="hostels">Your Hostels</TabsTrigger>
           </TabsList>
+
           <TabsContent value="bookings" className="space-y-4">
+            {/* Replace this with actual bookings later */}
             <Card>
               <CardHeader>
                 <CardTitle>Recent Bookings</CardTitle>
@@ -80,17 +126,12 @@ export default function OwnerDashboardPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {[1, 2, 3, 4, 5].map((booking) => (
+                  {[1, 2, 3].map((booking) => (
                     <div key={booking} className="flex items-center justify-between rounded-lg border p-4">
                       <div className="grid gap-1">
                         <div className="font-medium">Booking #{booking + 1000}</div>
                         <div className="text-sm text-muted-foreground">
-                          {
-                            ["Single Room", "Double Room", "Triple Room", "En-suite Single", "Double En-suite"][
-                            booking - 1
-                            ]
-                          }{" "}
-                          at {ownerHostels[booking % 3].name}
+                          Double Room at {ownerHostels[booking % ownerHostels.length]?.name}
                         </div>
                         <div className="text-sm">
                           <span className="text-green-600 font-medium">Confirmed</span> • Sep 1, 2023 - Jan 31, 2024
@@ -116,6 +157,7 @@ export default function OwnerDashboardPage() {
               </CardFooter>
             </Card>
           </TabsContent>
+
           <TabsContent value="hostels" className="space-y-4">
             <Card>
               <CardHeader>
@@ -129,7 +171,7 @@ export default function OwnerDashboardPage() {
                       <div className="flex items-center gap-4">
                         <div className="h-16 w-16 overflow-hidden rounded-md bg-muted">
                           <img
-                            src="/placeholder.svg?height=64&width=64"
+                            src={hostel.imageUrl || "/placeholder.svg?height=64&width=64"}
                             alt={hostel.name}
                             className="h-full w-full object-cover"
                           />
@@ -144,7 +186,7 @@ export default function OwnerDashboardPage() {
                         </div>
                       </div>
                       <Button variant="ghost" size="icon" asChild>
-                        <Link href={`/owner/hostels/{hostel.id}`}>
+                        <Link href={`/owner/hostels/${hostel.id}`}>
                           <ChevronRight className="h-4 w-4" />
                         </Link>
                       </Button>
@@ -165,5 +207,5 @@ export default function OwnerDashboardPage() {
         </Tabs>
       </div>
     </OwnerLayout>
-  )
+  );
 }
