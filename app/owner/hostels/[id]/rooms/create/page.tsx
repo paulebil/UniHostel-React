@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Upload, X } from "lucide-react"
+import { ArrowLeft, Upload, X } from "lucide-react"
 import { getHostels } from "@/lib/data"
 import OwnerLayout from "@/components/owner-layout"
 import * as z from "zod";
@@ -18,12 +18,14 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { toast } from "@/components/ui/use-toast";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function CreateRoomPage(props: { params: Promise<{ id: string }> }) {
   const [activeTab, setActiveTab] = useState("basic");
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [hostel, setHostel] = useState<any>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hostelId, setHostelId] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
@@ -73,6 +75,7 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
     async function loadHostel() {
       try {
         const params = await props.params;
+        setHostelId(params.id);
         const hostels = await getHostels();
         const foundHostel = hostels.find((h) => h.id === params.id) || hostels[0];
         setHostel(foundHostel);
@@ -156,7 +159,7 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
         });
 
         if (!response.ok) {
-          throw new Error(`Upload failed: {response.statusText}`);
+          throw new Error(`Upload failed: ${response.statusText}`);
         }
 
         const result = await response.json();
@@ -185,12 +188,12 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
         occupancy: parseInt(data.occupancy),
         description: data.description,
         photos: photoUrls,
-        hostelId: hostel.id,
+        hostelId: hostelId,
         createdAt: new Date().toISOString(),
       };
 
       // 3. Submit room data to your backend
-      const response = await fetch(`/api/hostels/{hostel.id}/rooms`, {
+      const response = await fetch(`/api/hostels/${hostelId}/rooms`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -199,20 +202,20 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to create room: {response.statusText}`);
+        throw new Error(`Failed to create room: ${response.statusText}`);
       }
 
       const result = await response.json();
 
       toast({
         title: "Room created successfully!",
-        description: `Room {data.roomNo} has been added to {hostel.name}`,
+        description: `Room ${data.roomNo} has been added to ${hostel.name}`,
       });
 
       // Reset form and redirect
       form.reset();
       setPreviewUrls([]);
-      router.push(`/owner/hostels/{hostel.id}/rooms`);
+      router.push(`/owner/hostels/${hostelId}/rooms`);
 
     } catch (error) {
       console.error('Error creating room:', error);
@@ -227,12 +230,27 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
   }
 
   if (!hostel) {
-    return <div>Loading...</div>;
+    return (
+      <OwnerLayout>
+        <div className="pl-8 pr-4 md:pl-16 md:pr-4 py-12">
+          <div>Loading...</div>
+        </div>
+      </OwnerLayout>
+    );
   }
 
   return (
     <OwnerLayout>
       <div className="pl-8 pr-4 md:pl-16 md:pr-4 py-12">
+        <div className="flex items-center gap-4 mb-6">
+          <Button variant="ghost" size="sm" asChild>
+            <Link href={`/owner/hostels/${hostelId}/rooms`}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Rooms
+            </Link>
+          </Button>
+        </div>
+
         <div>
           <h1 className="text-3xl font-bold">Add New Room</h1>
           <p className="text-muted-foreground">Create a new room at {hostel.name}</p>
@@ -322,7 +340,7 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
                                 <SelectItem value="2">2 People</SelectItem>
                                 <SelectItem value="3">3 People</SelectItem>
                                 <SelectItem value="4">4 People</SelectItem>
-                                <SelectItem value="5+">5+ People</SelectItem>
+                                <SelectItem value="5">5+ People</SelectItem>
                               </SelectContent>
                             </Select>
                             <FormMessage />
@@ -403,7 +421,7 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
                                     <div key={index} className="relative group">
                                       <img
                                         src={url}
-                                        alt={`Preview {index + 1}`}
+                                        alt={`Preview ${index + 1}`}
                                         className="w-full h-32 object-cover rounded-lg"
                                       />
                                       <button
@@ -449,6 +467,6 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
           </form>
         </Form>
       </div>
-    </OwnerLayout >
+    </OwnerLayout>
   )
 }
