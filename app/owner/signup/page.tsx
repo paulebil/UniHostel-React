@@ -14,16 +14,13 @@ import { toast } from "@/components/ui/use-toast";
 import api from "@/lib/axios";
 
 const formSchema = z.object({
-  firstName: z.string().min(2, {
+  name: z.string().min(2, {
     message: "Please enter your first name.",
-  }),
-  lastName: z.string().min(2, {
-    message: "Please enter your last name.",
   }),
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
-  phone: z.string().min(10, {
+  mobile: z.string().min(10, {
     message: "Please enter a valid phone number.",
   }).regex(/^[0-9]+/),
   password: z.string().min(8, {
@@ -44,34 +41,37 @@ export default function OwnerSignupPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
+      name: "",
       email: "",
-      phone: "",
+      mobile: "",
       password: "",
-      confirmPassword: "",
-      terms: false,
+      confirmPassword:"",
     },
   });
 
   // Handle form submission
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      await api.post("/owners/signup", values);
-      toast({
-        title: "Account created successfully!",
-        description: "Your owner account has been created.",
-      });
-      form.reset(); // optional
-    } catch (error: any) {
-      toast({
-        title: "Signup failed",
-        description: error?.response?.data?.message || "Something went wrong. Please try again.",
-        variant: "destructive",
-      });
-      console.error(error);
-    }
+ async function onSubmit(values: z.infer<typeof formSchema>) {
+  const payload = {
+    name: `${values.name}`,
+    email: values.email,
+    mobile: values.mobile, // Convert to number if needed
+    password: values.password,
+  };
+
+  try {
+    await api.post("/users/create", payload);
+    alert("Account created successfully! Your Owner account has been created successfully.");
+    form.reset();
+  } catch (error: any) {
+    toast({
+      title: "Signup failed",
+      description: error?.response?.data?.message || "Something went wrong. Please try again.",
+      variant: "destructive",
+    });
+    console.error(error);
   }
+}
+
 
 
   return (
@@ -84,34 +84,19 @@ export default function OwnerSignupPage() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <div className="grid gap-4 sm:grid-cols-2">
                 <FormField
                   control={form.control}
-                  name="firstName"
+                  name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-foreground">First Name</FormLabel>
+                      <FormLabel className="text-foreground">Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter your first name" {...field} />
+                        <Input placeholder="Enter your name" {...field} />
                       </FormControl>
                       <FormMessage className="text-destructive text-sm" />
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="lastName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-foreground">Last Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter your last name" {...field} />
-                      </FormControl>
-                      <FormMessage className="text-destructive text-sm" />
-                    </FormItem>
-                  )}
-                />
-              </div>
 
               <FormField
                 control={form.control}
@@ -129,7 +114,7 @@ export default function OwnerSignupPage() {
 
               <FormField
                 control={form.control}
-                name="phone"
+                name="mobile"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-foreground">Phone Number</FormLabel>

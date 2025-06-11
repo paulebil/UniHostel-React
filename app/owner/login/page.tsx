@@ -35,28 +35,70 @@ export default function OwnerLoginPage() {
   });
 
   // Handle form submission
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      const response = await api.post("/owner/login", values); // or whatever your endpoint is
+  // async function onSubmit(values: z.infer<typeof formSchema>) {
+  //   try {
+  //     const response = await api.post("/auth/login", values); // or whatever your endpoint is
 
-      toast({
-        title: "Login successful",
-        description: "You are now being redirected to your dashboard.",
-      });
+  //     console.log( "Response Data:", response.data);
 
-      router.push("/owner/dashboard");
-    } catch (error: any) {
-      const errorMessage =
-        error.response?.data?.message || "Invalid credentials or server error";
+  //     toast({
+  //       title: "Login successful",
+  //       description: "You are now being redirected to your dashboard.",
+  //     });
 
-      toast({
-        title: "Login failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
+  //     router.push("/owner/dashboard");
+  //   } catch (error: any) {
+  //     const errorMessage =
+  //       error.response?.data?.message || "Invalid credentials or server error";
+
+  //     toast({
+  //       title: "Login failed",
+  //       description: errorMessage,
+  //       variant: "destructive",
+  //     });
+  //   }
+  // }
+
+    // Handle form submission
+async function onSubmit(values: z.infer<typeof formSchema>) {
+  const payload = {
+    username: values.email,
+    password: values.password,
+  };
+
+  const form = new FormData();
+  form.append('username', values.email);
+  form.append('password', values.password);
+
+  try {
+    const response = await api.post('/auth/login', form,
+    {
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Accept': 'application/json',
+        }
     }
-  }
+    );
 
+    const { access_token } = response.data;
+
+    localStorage.setItem('token', access_token);
+
+
+    console.log("Response", response.data);
+
+    alert("You have successfully logged in.");
+    //form.reset();
+    router.push("/owner/dashboard");
+  } catch (error: any) {
+    console.log("Eror", error);
+    const errorMessage =
+      error.response?.data?.message || "Invalid credentials or server error";
+
+    alert("Login failed: " + errorMessage);
+
+  }
+} 
 
   return (
     <div className="container mx-auto flex min-h-[calc(100vh-200px)] max-w-md flex-col items-center justify-center px-4 py-12">

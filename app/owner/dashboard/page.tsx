@@ -35,8 +35,16 @@ export default function OwnerDashboardPage() {
 
   useEffect(() => {
     async function fetchOwnerData() {
+
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('Unauthorized');
+
+      const headers = {
+          Authorization: `Bearer ${token}`,
+      };
+      
       try {
-        const response = await api.get("/owner/dashboard");
+        const response = await api.get("/hostels/my-hostels", {headers});
         // Assuming the response returns an object like:
         // { hostels: [...], bookings: [...], revenue: 12450 }
 
