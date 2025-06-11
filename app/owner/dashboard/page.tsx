@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -28,27 +27,31 @@ import {
 import Link from "next/link";
 import OwnerLayout from "@/components/owner-layout";
 import api from "@/lib/axios";
+import { Button } from "@/components/ui/button";
 
 export default function OwnerDashboardPage() {
-  const [ownerHostels, setOwnerHostels] = useState<any[]>([]);
+  const [dashboardData, setDashboardData] = useState<any>({
+    hostels: [],
+    bookings: [],
+    total_revenue: 0,
+    total_rooms: 0
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchOwnerData() {
-
       const token = localStorage.getItem('token');
       if (!token) throw new Error('Unauthorized');
 
       const headers = {
-          Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       };
-      
-      try {
-        const response = await api.get("/hostels/my-hostels", {headers});
-        // Assuming the response returns an object like:
-        // { hostels: [...], bookings: [...], revenue: 12450 }
 
-        setOwnerHostels(response.data.hostels || []);
+      try {
+        const response = await api.get("/hostels/dashboard", { headers });
+
+        console.log("Dashboard Data:", response.data);
+        setDashboardData(response.data);
       } catch (error) {
         console.error("Failed to fetch dashboard data:", error);
       } finally {
@@ -58,11 +61,6 @@ export default function OwnerDashboardPage() {
 
     fetchOwnerData();
   }, []);
-
-  const totalRooms = ownerHostels.reduce(
-    (acc, hostel) => acc + (hostel.rooms?.length || 0),
-    0
-  );
 
   return (
     <OwnerLayout>
@@ -84,7 +82,7 @@ export default function OwnerDashboardPage() {
               <Building className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{ownerHostels.length}</div>
+              <div className="text-2xl font-bold">{dashboardData.hostels.length}</div>
             </CardContent>
           </Card>
           <Card>
@@ -93,7 +91,7 @@ export default function OwnerDashboardPage() {
               <Home className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{totalRooms}</div>
+              <div className="text-2xl font-bold">{dashboardData.total_rooms}</div>
               <p className="text-xs text-muted-foreground">+5 from last month</p>
             </CardContent>
           </Card>
@@ -103,7 +101,7 @@ export default function OwnerDashboardPage() {
               <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">24</div>
+              <div className="text-2xl font-bold">{dashboardData.bookings.length}</div>
               <p className="text-xs text-muted-foreground">+8 from last month</p>
             </CardContent>
           </Card>
@@ -113,7 +111,9 @@ export default function OwnerDashboardPage() {
               <CreditCard className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">12,450</div>
+              <div className="text-2xl font-bold">
+                UGX {parseFloat(dashboardData.total_revenue).toLocaleString()}
+              </div>
               <p className="text-xs text-muted-foreground">+15% from last month</p>
             </CardContent>
           </Card>
@@ -126,36 +126,38 @@ export default function OwnerDashboardPage() {
           </TabsList>
 
           <TabsContent value="bookings" className="space-y-4">
-            {/* Replace this with actual bookings later */}
             <Card>
               <CardHeader>
                 <CardTitle>Recent Bookings</CardTitle>
-                <CardDescription>You have 24 active bookings across your properties</CardDescription>
+                <CardDescription>You have {dashboardData.bookings.length} active bookings across your properties</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {[1, 2, 3].map((booking) => (
-                    <div key={booking} className="flex items-center justify-between rounded-lg border p-4">
-                      <div className="grid gap-1">
-                        <div className="font-medium">Booking #{booking + 1000}</div>
-                        <div className="text-sm text-muted-foreground">
-                          Double Room at {ownerHostels[booking % ownerHostels.length]?.name}
+                  {dashboardData.bookings.slice(0, 3).map((booking: any) => {
+                    const hostel = dashboardData.hostels.find((h: any) => h.id === booking.hostel_id);
+                    return (
+                      <div key={booking.id} className="flex items-center justify-between rounded-lg border p-4">
+                        <div className="grid gap-1">
+                          <div className="font-medium">Booking #{booking.id}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {booking.first_name} {booking.last_name} • {hostel?.name || 'Unknown Hostel'}
+                          </div>
+                          <div className="text-sm">
+                            <span className={`font-medium ${
+                              booking.status === 'confirmed' ? 'text-green-600' : 'text-yellow-600'
+                            }`}>
+                              {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                            </span>
+                          </div>
                         </div>
-                        <div className="text-sm">
-                          <span className="text-green-600 font-medium">Confirmed</span> • Sep 1, 2023 - Jan 31, 2024
+                        <div className="flex items-center gap-2">
+                          <Button variant="ghost" size="icon">
+                            <ChevronRight className="h-4 w-4" />
+                          </Button>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <div className="text-right">
-                          <div className="font-medium">{300 + booking * 50}</div>
-                          <div className="text-sm text-muted-foreground">per month</div>
-                        </div>
-                        <Button variant="ghost" size="icon">
-                          <ChevronRight className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </CardContent>
               <CardFooter>
@@ -170,16 +172,16 @@ export default function OwnerDashboardPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Your Hostels</CardTitle>
-                <CardDescription>Manage your {ownerHostels.length} hostels and their rooms</CardDescription>
+                <CardDescription>Manage your {dashboardData.hostels.length} hostels and their rooms</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {ownerHostels.map((hostel) => (
+                  {dashboardData.hostels.map((hostel: any) => (
                     <div key={hostel.id} className="flex items-center justify-between rounded-lg border p-4">
                       <div className="flex items-center gap-4">
                         <div className="h-16 w-16 overflow-hidden rounded-md bg-muted">
                           <img
-                            src={hostel.imageUrl || "/placeholder.svg?height=64&width=64"}
+                            src={hostel.image_url[0]?.url || "/placeholder.svg?height=64&width=64"}
                             alt={hostel.name}
                             className="h-full w-full object-cover"
                           />
@@ -189,7 +191,7 @@ export default function OwnerDashboardPage() {
                           <div className="text-sm text-muted-foreground">{hostel.location}</div>
                           <div className="flex items-center gap-2 text-sm">
                             <Users className="h-3.5 w-3.5 text-muted-foreground" />
-                            <span>{hostel.rooms?.length || 0} rooms</span>
+                            <span>{hostel.available_rooms} available rooms</span>
                           </div>
                         </div>
                       </div>
