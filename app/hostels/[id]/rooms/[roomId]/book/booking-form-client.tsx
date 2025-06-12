@@ -285,10 +285,12 @@ export default function BookingFormClient({ hostel, room }: BookingFormClientPro
                             <div className="flex items-center gap-4">
                                 <div className="h-16 w-16 overflow-hidden rounded-md bg-muted">
                                     <img
-                                        src="/placeholder.svg?height=64&width=64"
-                                        alt={room.name}
-                                        className="h-full w-full object-cover"
+                                    src={room.image_url?.[0]?.url || "/placeholder.svg?height=64&width=64"}
+                                    alt={room.name}
+                                    className="h-full w-full object-cover"
+                                    onError={(e) => (e.currentTarget.src = "/placeholder.svg?height=64&width=64")}
                                     />
+
                                 </div>
                                 <div>
                                     <h3 className="font-medium">{room.name}</h3>
