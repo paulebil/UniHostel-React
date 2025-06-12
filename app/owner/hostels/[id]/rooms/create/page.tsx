@@ -1,20 +1,44 @@
 "use client";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ArrowLeft, Upload, X } from "lucide-react"
-import { getHostels } from "@/lib/data"
-import OwnerLayout from "@/components/owner-layout"
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger
+} from "@/components/ui/tabs";
+import { ArrowLeft, Upload, X } from "lucide-react";
+import OwnerLayout from "@/components/owner-layout";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from "@/components/ui/form";
 import { toast } from "@/components/ui/use-toast";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -30,7 +54,7 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  // Move schema inside component to avoid SSR issues with File constructor
+  // Define form schema
   const formSchema = z.object({
     roomNo: z.string().min(1, {
       message: "Room number is required",
@@ -69,20 +93,13 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
     },
   });
 
-  // Load hostel data on component mount
+  // Load hostel ID from URL
   useEffect(() => {
-    async function loadHostel() {
-      try {
-        const params = await props.params;
-        setHostelId(params.id);
-        const hostels = await getHostels();
-        const foundHostel = hostels.find((h) => h.id === params.id) || hostels[0];
-        setHostel(foundHostel);
-      } catch (error) {
-        console.error("Error loading hostel:", error);
-      }
+    async function loadParams() {
+      const params = await props.params;
+      setHostelId(params.id);
     }
-    loadHostel();
+    loadParams();
   }, [props.params]);
 
   const handleNext = async () => {
@@ -109,8 +126,6 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
-
-      // Validate file types and sizes
       const validFiles = files.filter(file =>
         file.type.startsWith("image/") && file.size <= 10 * 1024 * 1024
       );
@@ -123,11 +138,9 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
         });
       }
 
-      // Update form value
       const currentPhotos = form.getValues("photos");
       form.setValue("photos", [...currentPhotos, ...validFiles]);
 
-      // Create preview URLs
       const newPreviewUrls = validFiles.map(file => URL.createObjectURL(file));
       setPreviewUrls(prev => [...prev, ...newPreviewUrls]);
     }
@@ -146,11 +159,9 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
-
     try {
       const formData = new FormData();
 
-      // Append room form fields to match API expectations
       formData.append("hostel_id", hostelId);
       formData.append("room_number", data.roomNo);
       formData.append("room_type", data.roomType.toUpperCase());
@@ -158,12 +169,10 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
       formData.append("description", data.description);
       formData.append("price_per_semester", data.price);
 
-      // Append images (API expects 'images' field name)
       data.photos.forEach((photo) => {
         formData.append("images", photo);
       });
 
-      // Send the request using axios
       const response = await api.post("/rooms/create", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -172,34 +181,25 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
 
       toast({
         title: "Room created successfully!",
-        description: `Room ${data.roomNo} has been added to ${hostel.name}`,
+        description: `Room ${data.roomNo} has been added to ${hostel?.name || 'your hostel'}`,
       });
 
-      // Reset form and redirect
       form.reset();
       setPreviewUrls([]);
       router.push(`/owner/hostels/${hostelId}/rooms`);
-
-    } catch (error) {
-      console.error('Error creating room:', error);
+    } catch (error: any) {
+      console.error("Error creating room:", error);
       toast({
         title: "Error creating room",
-        description: error instanceof Error ? error.message : "Something went wrong. Please try again.",
+        description:
+          error.response?.data?.message ||
+          error.message ||
+          "Something went wrong. Please try again.",
         variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
     }
-  }
-
-  if (!hostel) {
-    return (
-      <OwnerLayout>
-        <div className="pl-8 pr-4 md:pl-16 md:pr-4 py-12">
-          <div>Loading...</div>
-        </div>
-      </OwnerLayout>
-    );
   }
 
   return (
@@ -213,10 +213,9 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
             </Link>
           </Button>
         </div>
-
         <div>
           <h1 className="text-3xl font-bold">Add New Room</h1>
-          <p className="text-muted-foreground">Create a new room at {hostel.name}</p>
+          <p className="text-muted-foreground">Create a new room at {hostel?.name || 'your hostel'}</p>
         </div>
 
         <Form {...form}>
@@ -248,7 +247,6 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
                           </FormItem>
                         )}
                       />
-
                       <FormField
                         control={form.control}
                         name="price"
@@ -262,7 +260,6 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
                           </FormItem>
                         )}
                       />
-
                       <FormField
                         control={form.control}
                         name="roomType"
@@ -285,7 +282,6 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
                           </FormItem>
                         )}
                       />
-
                       <FormField
                         control={form.control}
                         name="occupancy"
@@ -311,7 +307,6 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
                         )}
                       />
                     </div>
-
                     <FormField
                       control={form.control}
                       name="description"
@@ -377,7 +372,6 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
                                   />
                                 </div>
                               </div>
-
                               {previewUrls.length > 0 && (
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                                   {previewUrls.map((url, index) => (
@@ -404,7 +398,6 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
                         </FormItem>
                       )}
                     />
-
                     <div className="space-y-2">
                       <Label>Photo Requirements</Label>
                       <ul className="list-inside list-disc text-sm text-muted-foreground">
@@ -431,5 +424,5 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
         </Form>
       </div>
     </OwnerLayout>
-  )
+  );
 }
