@@ -1,20 +1,41 @@
+"use client"
+
+import { useEffect, useState } from "react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { getHostels } from "@/lib/data"
 import Link from "next/link"
 import RoomCard from "@/components/room-card"
+import api from "@/lib/axios"
+import type { Hostel, Room } from "@/lib/data"
 
-export default async function RoomsPage(props: { params: { id: string } }) {
-  // Get params
-  const { id } = await props.params
 
-  // Find the hostel by ID
-  const hostels = await getHostels()
-  const hostel = hostels.find((h) => h.id === id) || hostels[0]
+export default function RoomsPage({ params }: { params: { id: string } }) {
+  const { id } = params
+  const [hostel, setHostel] = useState<Hostel | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchHostelById() {
+      try {
+        const response = await api.get(`/rooms/get-all-rooms?hostel_id=${id}`)
+        console.log("Fetched hostel:", response.data)
+        setHostel(response.data.hostel)
+      } catch (error) {
+        console.error("Error fetching hostel:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchHostelById()
+  }, [id])
+
+  if (loading) return <div className="p-8 text-muted-foreground">Loading hostel and rooms...</div>
+  if (!hostel) return <div className="p-8 text-red-500">Hostel not found.</div>
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6">
-        <Link href={`/hostels/{hostel.id}`} className="text-sm text-primary hover:underline">
+        <Link href={`/hostels/${hostel.id}`} className="text-sm text-primary hover:underline">
           &larr; Back to hostel details
         </Link>
         <h1 className="mt-2 text-3xl font-bold">Rooms at {hostel.name}</h1>
@@ -53,7 +74,7 @@ export default async function RoomsPage(props: { params: { id: string } }) {
       </div>
 
       <div className="space-y-6">
-        {hostel.rooms?.map((room, index) => (
+        {hostel.rooms?.map((room: Room, index: number) => (
           <RoomCard key={index} room={room} hostelId={hostel.id} detailed />
         ))}
       </div>
