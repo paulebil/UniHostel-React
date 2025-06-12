@@ -49,11 +49,17 @@ export default function HostelRoomsPage(props: { params: Promise<{ id: string }>
         setHostelId(params.id)
 
         // Fetch hostel details
-        const hostelResponse = await api.get(`/hostels/${params.id}`)
+        const hostelResponse = await api.get(`/hostels/hostel-detail?hostel_id=${params.id}`)
+
+        console.log("HostelResponse:", hostelResponse.data);
         setHostel(hostelResponse.data)
 
         // Fetch rooms for this hostel
-        const roomsResponse = await api.get(`/hostels/${params.id}/rooms`)
+        const roomsResponse = await api.get(`/rooms/get-all-my-rooms?hostel_id=${params.id}`)
+        console.log("RoomsResponse:", roomsResponse.data);
+        if (!roomsResponse.status == true){
+          setRooms([])
+        }
         setRooms(roomsResponse.data.rooms || [])
 
       } catch (error) {
