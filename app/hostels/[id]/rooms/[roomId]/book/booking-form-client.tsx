@@ -9,6 +9,7 @@ import { Info } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import axios from "axios"
 
 interface FormData {
     firstName: string
@@ -47,14 +48,12 @@ export default function BookingFormClient({ hostel, room }: BookingFormClientPro
     const [errors, setErrors] = useState<FormErrors>({})
     const [isSubmitting, setIsSubmitting] = useState(false)
 
-    // Validation functions
     const validateEmail = (email: string): boolean => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         return emailRegex.test(email)
     }
 
     const validatePhone = (phone: string): boolean => {
-        // Basic phone validation - adjust regex based on your requirements
         const phoneRegex = /^[\+]?[\d\s\-\(\)]{10,}$/
         return phoneRegex.test(phone.replace(/\s/g, ''))
     }
@@ -62,42 +61,36 @@ export default function BookingFormClient({ hostel, room }: BookingFormClientPro
     const validateForm = (): boolean => {
         const newErrors: FormErrors = {}
 
-        // First name validation
         if (!formData.firstName.trim()) {
             newErrors.firstName = 'First name is required'
         } else if (formData.firstName.trim().length < 2) {
             newErrors.firstName = 'First name must be at least 2 characters'
         }
 
-        // Last name validation
         if (!formData.lastName.trim()) {
             newErrors.lastName = 'Last name is required'
         } else if (formData.lastName.trim().length < 2) {
             newErrors.lastName = 'Last name must be at least 2 characters'
         }
 
-        // Email validation
         if (!formData.email.trim()) {
             newErrors.email = 'Email address is required'
         } else if (!validateEmail(formData.email)) {
             newErrors.email = 'Please enter a valid email address'
         }
 
-        // Phone validation
         if (!formData.phone.trim()) {
             newErrors.phone = 'Phone number is required'
         } else if (!validatePhone(formData.phone)) {
             newErrors.phone = 'Please enter a valid phone number'
         }
 
-        // University validation
         if (!formData.university.trim()) {
             newErrors.university = 'University/College is required'
         } else if (formData.university.trim().length < 3) {
             newErrors.university = 'University/College name must be at least 3 characters'
         }
 
-        // Terms validation
         if (!formData.termsAccepted) {
             newErrors.termsAccepted = 'You must accept the terms and conditions'
         }
@@ -112,7 +105,6 @@ export default function BookingFormClient({ hostel, room }: BookingFormClientPro
             [field]: value
         }))
 
-        // Clear error for this field when user starts typing
         if (errors[field]) {
             setErrors(prev => ({
                 ...prev,
@@ -122,29 +114,48 @@ export default function BookingFormClient({ hostel, room }: BookingFormClientPro
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
+    e.preventDefault()
 
-        if (!validateForm()) {
-            return
-        }
-
-        setIsSubmitting(true)
-
-        try {
-            // Here you would typically save the form data to your backend
-            // For now, we'll just simulate a delay
-            await new Promise(resolve => setTimeout(resolve, 1000))
-
-            // Navigate to payment page using Next.js router
-            router.push(`/hostels/${hostel.id}/rooms/${room.id}/book/payment`)
-        } catch (error) {
-            console.error('Error submitting form:', error)
-            // Handle error appropriately - you might want to show an error message
-        } finally {
-            setIsSubmitting(false)
-        }
+    if (!validateForm()) {
+        return
     }
 
+    setIsSubmitting(true)
+
+    try {
+        const nowISO = new Date().toISOString()
+
+        const postData = {
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        email_address: formData.email,
+        phone_number: formData.phone,
+        university: formData.university,
+        hostel_id: hostel.id,
+        room_id: room.id,
+        status: "PENDING",
+        created_at: nowISO,
+        updated_at: nowISO,
+        }
+
+        await axios.post("http://127.0.0.1:8050/booking/create", postData, {
+        headers: {
+            "Content-Type": "application/json",
+            accept: "application/json",
+        },
+        })
+        alert("Booking successful");
+
+        // After successful submission, navigate to payment page
+        router.push(`/hostels/${hostel.id}/rooms/${room.id}/book/payment`)
+    } catch (error) {
+        
+        console.error("Error submitting form:", error)
+        // Optionally show user-friendly error message here
+    } finally {
+        setIsSubmitting(false)
+    }
+    }
     return (
         <form onSubmit={handleSubmit}>
             <div className="grid gap-8 lg:grid-cols-3">
@@ -285,12 +296,11 @@ export default function BookingFormClient({ hostel, room }: BookingFormClientPro
                             <div className="flex items-center gap-4">
                                 <div className="h-16 w-16 overflow-hidden rounded-md bg-muted">
                                     <img
-                                    src={room.image_url?.[0]?.url || "/placeholder.svg?height=64&width=64"}
-                                    alt={room.name}
-                                    className="h-full w-full object-cover"
-                                    onError={(e) => (e.currentTarget.src = "/placeholder.svg?height=64&width=64")}
+                                        src={room.image_url?.[0]?.url || "/placeholder.svg?height=64&width=64"}
+                                        alt={room.name}
+                                        className="h-full w-full object-cover"
+                                        onError={(e) => (e.currentTarget.src = "/placeholder.svg?height=64&width=64")}
                                     />
-
                                 </div>
                                 <div>
                                     <h3 className="font-medium">{room.name}</h3>
@@ -333,8 +343,8 @@ export default function BookingFormClient({ hostel, room }: BookingFormClientPro
                             <Separator />
 
                             <div className="flex justify-between font-medium">
-                                <span>Total due now</span>
-                                <span>{room.price + 100}</span>
+                            <span>Total due now</span>
+                            <span>{((Number(room.price) || 0) + 100).toLocaleString()}</span>
                             </div>
 
                             <div className="rounded-lg bg-muted p-3 text-sm">
