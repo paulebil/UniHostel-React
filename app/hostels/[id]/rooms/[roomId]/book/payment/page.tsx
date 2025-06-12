@@ -7,11 +7,42 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { hostels } from "@/lib/data"
-import { CreditCard, Lock, ShieldCheck, Smartphone } from "lucide-react"
+import { CreditCard, Lock, ShieldCheck, Smartphone, Loader2 } from "lucide-react"
 import Link from "next/link"
-import { useState, use } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import api from "@/lib/axios"
+
+export interface Room {
+  id: number
+  hostel_id: number
+  room_number: string
+  price_per_semester: number
+  room_type: string
+  availability: boolean
+  image_url: Array<{ url: string }>
+  created_at: string
+  updated_at: string
+}
+
+export interface ImageUrl {
+  url: string
+}
+
+export interface Hostel {
+  id: string
+  name: string
+  location: string
+  description?: string
+  average_price: number
+  owner_id: string
+  available_rooms: number
+  rule_and_regulations?: string
+  amenities?: string[]
+  image_url?: ImageUrl[]
+  created_at?: string
+  updated_at?: string
+}
 
 interface CardFormData {
   cardNumber: string
@@ -43,6 +74,13 @@ export default function PaymentPage(props: { params: Promise<{ id: string; roomI
   const router = useRouter()
   const [activeTab, setActiveTab] = useState("card")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  // Data state
+  const [hostel, setHostel] = useState<Hostel | null>(null)
+  const [room, setRoom] = useState<Room | null>(null)
+  const [params, setParams] = useState<{ id: string; roomId: string } | null>(null)
 
   // Card form state
   const [cardFormData, setCardFormData] = useState<CardFormData>({
@@ -61,18 +99,35 @@ export default function PaymentPage(props: { params: Promise<{ id: string; roomI
   })
   const [mobileMoneyErrors, setMobileMoneyErrors] = useState<MobileMoneyFormErrors>({})
 
-  // Get params - Use React.use() to unwrap the Promise
-  const { id, roomId } = use(props.params)
+  // Resolve params and fetch data
+  useEffect(() => {
+    const initializeData = async () => {
+      try {
+        setIsLoading(true)
+        setError(null)
 
-  // Find the hostel by ID
-  const hostel = hostels.find((h) => h.id === id) || hostels[0]
+        // Resolve params
+        const resolvedParams = await props.params
+        setParams(resolvedParams)
 
-  // Find the room by ID
-  const room = hostel.rooms?.find((r) => r.id === roomId) || hostel.rooms?.[0]
+        // Fetch hostel and room data
+        const [hostelResponse, roomResponse] = await Promise.all([
+          api.get(`/hostels/hostel-detail-student?hostel_id=${resolvedParams.id}`),
+          api.get(`/rooms/get-single-room-detail?hostel_id=${resolvedParams.id}&room_id=${resolvedParams.roomId}`)
+        ])
 
-  if (!room) {
-    return <div>Room not found</div>
-  }
+        setHostel(hostelResponse.data)
+        setRoom(roomResponse.data)
+      } catch (err) {
+        console.error('Error fetching data:', err)
+        setError('Failed to load booking details. Please try again.')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    initializeData()
+  }, [props.params])
 
   // Validation functions
   const validateCardNumber = (cardNumber: string): boolean => {
@@ -220,6 +275,11 @@ export default function PaymentPage(props: { params: Promise<{ id: string; roomI
   const handlePayment = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    if (!room || !hostel || !params) {
+      setError('Missing booking information. Please try again.')
+      return
+    }
+
     let isValid = false
 
     if (activeTab === 'card') {
@@ -235,18 +295,72 @@ export default function PaymentPage(props: { params: Promise<{ id: string; roomI
     setIsSubmitting(true)
 
     try {
-      // Simulate payment processing
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      // Create payment payload
+      const paymentData = {
+        hostel_id: params.id,
+        room_id: params.roomId,
+        amount: room.price_per_semester + 100,
+        payment_method: activeTab,
+        ...(activeTab === 'card' ? {
+          card_details: {
+            card_number: cardFormData.cardNumber.replace(/\s/g, ''),
+            expiry_date: cardFormData.expiryDate,
+            cvc: cardFormData.cvc,
+            name_on_card: cardFormData.nameOnCard
+          }
+        } : {
+          mobile_money_details: {
+            provider: mobileMoneyFormData.provider,
+            phone_number: mobileMoneyFormData.phoneNumber,
+            account_name: mobileMoneyFormData.accountName
+          }
+        })
+      }
 
-      // Navigate to confirmation page
-      router.push(`/hostels/${hostel.id}/rooms/${room.id}/book/confirmation`)
+      // Make payment API call
+      // const response = await api.post('/payments/process', paymentData)
+      console.log("Payment Data", paymentData);
+
+      // Navigate to confirmation page on success
+      router.push(`/hostels/${hostel.id}/rooms/${room.id}/book/confirmation?payment_id=${1}`)
     } catch (error) {
       console.error('Payment error:', error)
-      // Handle payment error
+      setError('Payment failed. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
   }
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="flex items-center gap-2">
+            <Loader2 className="h-6 w-6 animate-spin" />
+            <span>Loading booking details...</span>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Error state
+  if (error || !room || !hostel || !params) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-red-600 mb-4">Error</h1>
+          <p className="text-muted-foreground mb-4">
+            {error || 'Room or hostel not found'}
+          </p>
+          <Button onClick={() => router.back()}>Go Back</Button>
+        </div>
+      </div>
+    )
+  }
+
+  const totalAmount = room.price_per_semester + 100
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -350,13 +464,10 @@ export default function PaymentPage(props: { params: Promise<{ id: string; roomI
                         Your payment information is encrypted and secure. We never store your full card details.
                       </p>
                     </div>
-
-                    <Button
-                      type="submit"
-                      className="w-full"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? 'Processing Payment...' : `Pay ${room.price + 100}`}
+                    <Button type="submit" className="w-full" disabled={isSubmitting}>
+                      {isSubmitting
+                        ? "Processing Payment..."
+                        : `Pay Ugx ${totalAmount}`}
                     </Button>
                   </CardFooter>
                 </Card>
@@ -451,7 +562,7 @@ export default function PaymentPage(props: { params: Promise<{ id: string; roomI
                     >
                       {isSubmitting
                         ? 'Processing Payment...'
-                        : `Pay ${room.price + 100}${mobileMoneyFormData.provider ? ` via ${mobileMoneyFormData.provider.toUpperCase()}` : ''}`
+                        : `Pay Ugx${totalAmount}${mobileMoneyFormData.provider ? ` via ${mobileMoneyFormData.provider.toUpperCase()}` : ''}`
                       }
                     </Button>
                   </CardFooter>
@@ -470,13 +581,13 @@ export default function PaymentPage(props: { params: Promise<{ id: string; roomI
               <div className="flex items-center gap-4">
                 <div className="h-16 w-16 overflow-hidden rounded-md bg-muted">
                   <img
-                    src="/placeholder.svg?height=64&width=64"
-                    alt={room.name}
+                    src={room.image_url?.[0]?.url || "/placeholder.svg?height=64&width=64"}
+                    alt={`Room ${room.room_number}`}
                     className="h-full w-full object-cover"
                   />
                 </div>
                 <div>
-                  <h3 className="font-medium">{room.name}</h3>
+                  <h3 className="font-medium">Room {room.room_number}</h3>
                   <p className="text-sm text-muted-foreground">
                     {hostel.name}, {hostel.location}
                   </p>
@@ -488,15 +599,15 @@ export default function PaymentPage(props: { params: Promise<{ id: string; roomI
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Room type</span>
-                  <span>{room.type}</span>
+                  <span>{room.room_type}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Duration</span>
                   <span>1 Semester (4-5 months)</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Monthly rent</span>
-                  <span>{room.price}</span>
+                  <span className="text-muted-foreground">Semester rent</span>
+                  <span>Ugx {room.price_per_semester}</span>
                 </div>
               </div>
 
@@ -505,11 +616,11 @@ export default function PaymentPage(props: { params: Promise<{ id: string; roomI
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Security deposit</span>
-                  <span>{room.price}</span>
+                  <span>Ugx {room.price_per_semester}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Booking fee</span>
-                  <span>100</span>
+                  <span>Ugx 100</span>
                 </div>
               </div>
 
@@ -517,7 +628,7 @@ export default function PaymentPage(props: { params: Promise<{ id: string; roomI
 
               <div className="flex justify-between font-medium">
                 <span>Total due now</span>
-                <span>{room.price + 100}</span>
+                <span>Ugx {totalAmount}</span>
               </div>
 
               <div className="flex items-center gap-2 rounded-lg bg-primary/10 p-3 text-sm text-primary">
