@@ -6,7 +6,6 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Search, SlidersHorizontal } from "lucide-react"
 import HostelCard from "@/components/hostel-card"
-import { hostels } from "@/lib/data"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 
 export default function HostelsPage() {
