@@ -53,6 +53,29 @@ export default function Home() {
   }, [])
 
 
+  const [query, setQuery] = useState("")
+  const handleSearch = async () => {
+    if (!query.trim()) return
+
+    setLoading(true)
+    try {
+      const response = await api.put("/hostels/search", { query })
+      console.log("Search response:", response.data)
+
+      const hostelsArray = Array.isArray(response.data?.hostels)
+        ? response.data.hostels
+        : []
+
+      setHostels(hostelsArray)
+    } catch (error) {
+      console.error("Search failed:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+
+
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -66,9 +89,20 @@ export default function Home() {
         <div className="mx-auto flex max-w-md flex-col gap-4 sm:flex-row">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
-            <Input placeholder="Search by location, university, or hostel name" className="pl-10" />
+            <Input
+              placeholder="Search by location, university, or hostel name"
+              className="pl-10"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSearch()
+                }
+              }}
+            />
+
           </div>
-          <Button>Search</Button>
+          <Button onClick={handleSearch}>Search</Button>
         </div>
       </section>
 
