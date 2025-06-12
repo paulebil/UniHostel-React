@@ -18,15 +18,17 @@ import { ArrowLeft, Edit, MoreHorizontal, Plus, Search, Trash, Users } from "luc
 import OwnerLayout from "@/components/owner-layout"
 
 interface Room {
-  id: string
-  roomNo: string
-  price: number
-  roomType: string
-  occupancy: number
-  description: string
-  photos: string[]
-  isAvailable: boolean
-  createdAt: string
+  id: number
+  room_number: string
+  price_per_semester: number
+  room_type: string
+  occupancy?: number
+  description?: string
+  image_url: Array<{ url: string }>
+  availability: boolean
+  created_at: string
+  updated_at: string
+  hostel_id: number
 }
 
 interface Hostel {
@@ -57,13 +59,16 @@ export default function HostelRoomsPage(props: { params: Promise<{ id: string }>
         // Fetch rooms for this hostel
         const roomsResponse = await api.get(`/rooms/get-all-my-rooms?hostel_id=${params.id}`)
         console.log("RoomsResponse:", roomsResponse.data);
-        if (!roomsResponse.status == true){
+        
+        if (roomsResponse.data && roomsResponse.data.rooms) {
+          setRooms(roomsResponse.data.rooms)
+        } else {
           setRooms([])
         }
-        setRooms(roomsResponse.data.rooms || [])
 
       } catch (error) {
         console.error("Error fetching data:", error)
+        setRooms([])
       } finally {
         setLoading(false)
       }
@@ -72,11 +77,11 @@ export default function HostelRoomsPage(props: { params: Promise<{ id: string }>
     fetchData()
   }, [props.params])
 
-  const handleDeleteRoom = async (roomId: string) => {
+  const handleDeleteRoom = async (roomId: number) => {
     if (!confirm("Are you sure you want to delete this room?")) return
 
     try {
-      await api.delete(`/hostels/${hostelId}/rooms/${roomId}`)
+      await api.delete(`/rooms/delete?room_id=${roomId}`)
       setRooms(rooms.filter(room => room.id !== roomId))
     } catch (error) {
       console.error("Error deleting room:", error)
@@ -153,27 +158,29 @@ export default function HostelRoomsPage(props: { params: Promise<{ id: string }>
                     <div className="flex items-center gap-4">
                       <div className="h-20 w-20 overflow-hidden rounded-md bg-muted">
                         <img
-                          src={room.photos?.[0] || "/placeholder.svg?height=80&width=80"}
-                          alt={`Room ${room.roomNo}`}
+                          src={room.image_url?.[0]?.url || "/placeholder.svg?height=80&width=80"}
+                          alt={`Room ${room.room_number}`}
                           className="h-full w-full object-cover"
                         />
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <h3 className="font-medium">Room {room.roomNo}</h3>
-                          <Badge variant={room.isAvailable ? "default" : "secondary"}>
-                            {room.isAvailable ? "Available" : "Occupied"}
+                          <h3 className="font-medium">Room {room.room_number}</h3>
+                          <Badge variant={room.availability ? "default" : "secondary"}>
+                            {room.availability ? "Available" : "Occupied"}
                           </Badge>
                         </div>
-                        <p className="text-sm text-muted-foreground">{room.roomType}</p>
+                        <p className="text-sm text-muted-foreground capitalize">{room.room_type}</p>
                         <div className="mt-1 flex items-center gap-4">
                           <span className="text-sm font-medium">
-                            UGX {room.price?.toLocaleString()}/semester
+                            UGX {room.price_per_semester?.toLocaleString()}/semester
                           </span>
-                          <div className="flex items-center gap-1 text-sm">
-                            <Users className="h-3.5 w-3.5 text-muted-foreground" />
-                            <span>{room.occupancy} {room.occupancy === 1 ? 'person' : 'people'}</span>
-                          </div>
+                          {room.occupancy && (
+                            <div className="flex items-center gap-1 text-sm">
+                              <Users className="h-3.5 w-3.5 text-muted-foreground" />
+                              <span>{room.occupancy} {room.occupancy === 1 ? 'person' : 'people'}</span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>

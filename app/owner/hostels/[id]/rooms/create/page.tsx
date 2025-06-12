@@ -19,6 +19,7 @@ import { toast } from "@/components/ui/use-toast";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import api from "@/lib/axios";
 
 export default function CreateRoomPage(props: { params: Promise<{ id: string }> }) {
   const [activeTab, setActiveTab] = useState("basic");
@@ -34,13 +35,11 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
     roomNo: z.string().min(1, {
       message: "Room number is required",
     }),
-
     price: z.string().min(1, {
       message: "Price per semester is required",
     }).refine(value => !isNaN(Number(value)), {
       message: "Price must be a valid number",
     }),
-
     roomType: z.string().min(1, {
       message: "Please select a room type",
     }),
@@ -145,67 +144,31 @@ export default function CreateRoomPage(props: { params: Promise<{ id: string }> 
     setPreviewUrls(updatedPreviews);
   };
 
-  // Upload photos to your storage service (e.g., AWS S3, Cloudinary, etc.)
-  const uploadPhotos = async (photos: File[]): Promise<string[]> => {
-    const uploadPromises = photos.map(async (photo) => {
-      const formData = new FormData();
-      formData.append('file', photo);
-      formData.append('folder', 'rooms'); // organize uploads by folder
-
-      try {
-        const response = await fetch('/api/upload', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (!response.ok) {
-          throw new Error(`Upload failed: ${response.statusText}`);
-        }
-
-        const result = await response.json();
-        return result.url; // assuming your API returns { url: "..." }
-      } catch (error) {
-        console.error('Error uploading photo:', error);
-        throw error;
-      }
-    });
-
-    return Promise.all(uploadPromises);
-  };
-
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
 
     try {
-      // 1. Upload photos first
-      const photoUrls = await uploadPhotos(data.photos);
+      const formData = new FormData();
 
-      // 2. Prepare room data
-      const roomData = {
-        roomNo: data.roomNo,
-        price: parseFloat(data.price.replace(/,/g, '')), // Convert to number
-        roomType: data.roomType,
-        occupancy: parseInt(data.occupancy),
-        description: data.description,
-        photos: photoUrls,
-        hostelId: hostelId,
-        createdAt: new Date().toISOString(),
-      };
+      // Append room form fields to match API expectations
+      formData.append("hostel_id", hostelId);
+      formData.append("room_number", data.roomNo);
+      formData.append("room_type", data.roomType.toUpperCase());
+      formData.append("occupancy", data.occupancy);
+      formData.append("description", data.description);
+      formData.append("price_per_semester", data.price);
 
-      // 3. Submit room data to your backend
-      const response = await fetch(`/api/hostels/${hostelId}/rooms`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(roomData),
+      // Append images (API expects 'images' field name)
+      data.photos.forEach((photo) => {
+        formData.append("images", photo);
       });
 
-      if (!response.ok) {
-        throw new Error(`Failed to create room: ${response.statusText}`);
-      }
-
-      const result = await response.json();
+      // Send the request using axios
+      const response = await api.post("/rooms/create", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       toast({
         title: "Room created successfully!",

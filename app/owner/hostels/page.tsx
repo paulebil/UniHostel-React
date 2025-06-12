@@ -107,7 +107,7 @@ export default function OwnerHostelsPage() {
                           </div>
                           <div className="flex items-center gap-1 text-sm">
                             <Users className="h-3.5 w-3.5 text-muted-foreground" />
-                            <span>{hostel.rooms?.length || 0} rooms</span>
+                            <span>{hostel.available_rooms || 0} rooms</span>
                           </div>
                         </div>
                       </div>
