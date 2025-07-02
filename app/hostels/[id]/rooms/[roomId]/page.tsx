@@ -114,7 +114,7 @@ export default function RoomDetailsPage() {
 
                 <div>
                   <h3 className="mb-3 text-xl font-semibold">Pricing</h3>
-                  <p className="text-muted-foreground">${room.price_per_semester} per semester</p>
+                  <p className="text-muted-foreground">Ugx {room.price_per_semester} per semester</p>
                 </div>
               </div>
             </TabsContent>
@@ -125,7 +125,7 @@ export default function RoomDetailsPage() {
           <Card className="sticky top-8">
             <CardContent className="p-6">
               <div className="mb-4 text-2xl font-bold">
-                ${room.price_per_semester}
+                Ugx {room.price_per_semester}
                 <span className="text-sm font-normal text-muted-foreground"> / semester</span>
               </div>
 
